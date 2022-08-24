@@ -1,0 +1,35 @@
+package ru.autopulse05.android.feature.laximo.domain.model
+
+
+data class LaximoVehicle(
+  val id: String,
+  val name: String,
+  val brand: String,
+  val ssd: String,
+  val catalog: String? = null,
+  val model: String? = null,
+  val grade: String? = null,
+  val transmission: String? = null,
+  val doors: Int? = null,
+  val creationRegion: String? = null,
+  val destinationRegion: String? = null,
+  val date: String? = null,
+  val manufactured: Int? = null,
+  val frameColor: String? = null,
+  val trimColor: String? = null,
+  val dateFrom: String? = null,
+  val dateTo: String? = null,
+  val frame: String? = null,
+  val frames: String? = null,
+  val frameFrom: String? = null,
+  val frameTo: String? = null,
+  val engine: String? = null,
+  val engine1: String? = null,
+  val engine2: String? = null,
+  val engineNo: String? = null,
+  val options: String? = null,
+  val modelYearFrom: String? = null,
+  val modelYearTo: String? = null,
+  val modification: String? = null,
+  val description: String? = null
+)

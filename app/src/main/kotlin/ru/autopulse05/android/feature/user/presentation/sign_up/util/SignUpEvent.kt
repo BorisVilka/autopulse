@@ -1,0 +1,28 @@
+package ru.autopulse05.android.feature.user.presentation.sign_up.util
+
+sealed class SignUpEvent {
+  data class TabChange(val value: SignUpTabs): SignUpEvent()
+  data class SurnameChange(val value: String): SignUpEvent()
+  data class NameChange(val value: String): SignUpEvent()
+  data class SecondNameChange(val value: String): SignUpEvent()
+  data class IcqChange(val value: String): SignUpEvent()
+  data class EntityNameChange(val value: String): SignUpEvent()
+  data class EntityAddressChange(val value: String): SignUpEvent()
+  data class ActualAddressChange(val value: String): SignUpEvent()
+  data class PhoneChange(val value: String): SignUpEvent()
+  data class EmailChange(val value: String): SignUpEvent()
+  data class PasswordChange(val value: String): SignUpEvent()
+  data class RepeatedEmailChange(val value: String): SignUpEvent()
+  data class RepeatedPasswordChange(val value: String): SignUpEvent()
+  data class OfficeChange(val value: String) : SignUpEvent()
+  data class OfficesVisibilityChange(val value: Boolean) : SignUpEvent()
+  data class RegionChange(val value: String) : SignUpEvent()
+  data class RegionsVisibilityChange(val value: Boolean) : SignUpEvent()
+  data class OrganisationTypeChange(val value: String) : SignUpEvent()
+  data class OrganisationTypesVisibilityChange(val value: Boolean) : SignUpEvent()
+  data class EntityTypeChange(val value: String) : SignUpEvent()
+  data class EntityTypesVisibilityChange(val value: Boolean) : SignUpEvent()
+  data class CityChange(val value: String) : SignUpEvent()
+  data class TermsAgreementChange(val value: Boolean): SignUpEvent()
+  data class Submit(val tab: SignUpTabs): SignUpEvent()
+}
