@@ -17,5 +17,7 @@ data class OrderUseCases(
   // Validation
   val validateComment: OrderValidateCommentUseCase,
 
-  val payment: OrderGetPaymentUseCase
+  val payment: OrderGetPaymentUseCase,
+  val offices: OrderGetOfficesUseCase,
+  val address: OrderGetShipmentAddressUseCase
 )

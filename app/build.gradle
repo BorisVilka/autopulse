@@ -118,6 +118,9 @@ dependencies {
     exclude module: 'stax-api'
     exclude module: 'xpp3'
   }
+
+  //RxJava
+  implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {

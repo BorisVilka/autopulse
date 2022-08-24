@@ -12,7 +12,9 @@ data class Position(
   val description: String,
   val quantity: Int,
   val comment: String,
-  val itemKey: String
+  val itemKey: String,
+  val status: String?,
+  val price: String
 )
 
 fun Position.toPositionDto() = PositionDto(
@@ -24,5 +26,7 @@ fun Position.toPositionDto() = PositionDto(
   description = description,
   quantity = quantity,
   comment = comment,
-  itemKey = itemKey
+  itemKey = itemKey,
+  status = status,
+  price = price
 )

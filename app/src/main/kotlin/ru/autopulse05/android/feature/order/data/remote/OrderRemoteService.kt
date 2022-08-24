@@ -13,9 +13,10 @@ interface OrderRemoteService {
   suspend fun get(
     @Query("userlogin") login: String,
     @Query("userpsw") passwordHash: String,
-    @Query("format") format: String? = null,
+    @Query("format") format: String? = "p",
     @Query("skip") skip: Int? = null,
-    @Query("limit") limit: Int? = null
+    @Query("limit") limit: Int? = null,
+
   ): OrdersDto
 
   @POST(OrderHttpRoutes.INSTANT)
@@ -82,17 +83,17 @@ interface OrderRemoteService {
   suspend fun order(
     @Query("userlogin") login: String,
     @Query("userpsw") passwordHash: String,
-    @Query("paymentMethod") paymentMethod: String,
-    @Query("shipmentMethod") shipmentMethod: String,
+    @Query("paymentMethod") paymentMethod: String?,
+    @Query("shipmentMethod") shipmentMethod: String?,
     @Query("shipmentAddress") shipmentAddress: String?,
     @Query("office") shipmentOffice: String?,
     @Query("shipmentDate") shipmentDate: String? = null,
-    @Query("comment") comment: String,
+    @Query("comment") comment: String?,
     @Query("basketId") basketId: String? = null,
     @Query("wholeOrderOnly") wholeOrderMode: Int = WholeOrderMode.OFF,
-    @Query("positionIds") positionIds: Array<Int>? = null,
+    @Query("positionIds[]") positionIds: Array<Int>? = null,
     @Query("clientOrderNumber") clientOrderNumber: String? = null,
-  ): CreateOrdersDto
+  )
 
   // Refunds
   @GET(OrderHttpRoutes.COMPLAINTS)
@@ -144,4 +145,18 @@ interface OrderRemoteService {
     @Query("userlogin") login: String,
     @Query("userpsw") passwordHash: String
   ): PaymentDtoList
+
+
+  @GET(OrderHttpRoutes.OFFICE)
+  suspend fun getOffices(
+    @Query("userlogin") login: String,
+    @Query("userpsw") passwordHash: String
+  ): ShipmentOfficeListDto
+
+  @POST(OrderHttpRoutes.ADDRESS)
+  suspend fun getAddress(
+    @Query("userlogin") login: String,
+    @Query("userpsw") passwordHash: String,
+    @Query("address") address: String
+  ): ShipmentAddressDto
 }

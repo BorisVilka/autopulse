@@ -128,23 +128,11 @@ class CatalogsViewModel @Inject constructor(
   }
 
   private fun onSearchByVin() {
-    val vinResult = vinUseCases.validate(state.vin.value)
-
-    val hasError = listOf(vinResult).any { it is Data.Error }
-
-    if (!hasError) getVehiclesByVin()
+    getVehiclesByVin()
   }
 
   private fun onSearchByFrame() {
-    val frameNameResult = carUseCases.validateFrameName(state.vin.value)
-    val frameNumberResult = carUseCases.validateFrameNumber(state.vin.value)
-
-    val hasError = listOf(
-      frameNameResult,
-      frameNumberResult
-    ).any { it is Data.Error }
-
-    if (!hasError) getVehiclesByFrame()
+    getVehiclesByFrame()
   }
 
   init {

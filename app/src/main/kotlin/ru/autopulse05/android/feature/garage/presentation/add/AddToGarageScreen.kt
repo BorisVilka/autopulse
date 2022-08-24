@@ -50,7 +50,7 @@ fun AddToGarageScreen(
           navController.popBackStack()
           navController.navigate(UserScreens.NotSignedIn.route)
         }
-        AddToGarageUiEvent.Success -> navController.navigate(onSuccessNavigate!!)
+        AddToGarageUiEvent.Success -> navController.popBackStack()
       }
     }
   }

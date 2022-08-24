@@ -7,7 +7,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.gson.reflect.TypeToken
 import ru.autopulse05.android.feature.cart.domain.model.CartItem
+import ru.autopulse05.android.feature.order.domain.model.Order
 import ru.autopulse05.android.feature.order.presentation.OrderScreen
+import ru.autopulse05.android.feature.order.presentation.detail.OrderDetailScreen
 import ru.autopulse05.android.shared.data.ext.fromJson
 
 private object BasketItemListToken: TypeToken<List<CartItem>>()
@@ -30,6 +32,20 @@ fun NavGraphBuilder.orderNavigation(
     OrderScreen(
       navController = navController,
       positions = positions
+    )
+  }
+
+  composable(
+    route = OrderScreens.Detail.route+"?order={order}",
+    arguments = listOf(
+      navArgument("order") {
+        NavType.StringType
+      }
+    )
+  ) { entry ->
+    OrderDetailScreen(
+      navController = navController,
+      order = entry.arguments?.getString("order")?.fromJson(Order::class.java)!!
     )
   }
 }

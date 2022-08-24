@@ -1,7 +1,9 @@
 package ru.autopulse05.android.feature.user.presentation.profile.tabs
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -10,6 +12,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.car.presentation.edit.components.GarageCar
 import ru.autopulse05.android.feature.user.presentation.profile.ProfileViewModel
 import ru.autopulse05.android.feature.user.presentation.profile.util.ProfileEvent
@@ -35,13 +38,14 @@ fun ProfileTabPageGarage(
     }
   }
 
-  Column {
+  Column(modifier =  Modifier.background(color = MaterialTheme.colors.surface)) {
     state.cars.forEach { car ->
       GarageCar(car = car,
       onClick = {
           viewModel.editCar(it)
         }
       )
+      Spacer(modifier = Modifier.height(SpaceSmall))
     }
 
     Spacer(modifier = Modifier.height(SpaceNormal))

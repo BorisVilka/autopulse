@@ -78,4 +78,13 @@ interface LaximoRemoteService {
     ssd: String,
     locale: String = "ru_RU"
   ): List<LaximoDetailDto>
+
+
+  suspend fun getImageCodes(
+    login: String,
+    password: String,
+    ssd: String,
+    catalog: String,
+    unitId: String,
+  ): List<LaximoImageDto>
 }

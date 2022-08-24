@@ -92,6 +92,14 @@ object LaximoModule {
 
   @Singleton
   @Provides
+  fun provideLaximoGetImageUseCase(
+    remoteService: LaximoRemoteService
+  ): LaximoGetImagesUseCase = LaximoGetImagesUseCase(
+    remoteService = remoteService
+  )
+
+  @Singleton
+  @Provides
   fun provideLaximoUseCases(
     getCatalogs: LaximoGetCatalogsUseCase,
     getVehicles: LaximoGetVehiclesUseCase,
@@ -101,7 +109,8 @@ object LaximoModule {
     getUnits: LaximoGetUnitsUseCase,
     getUnit: LaximoGetUnitUseCase,
     getVehicleFormFields: LaximoGetVehicleFormFieldsUseCase,
-    getDetails: LaximoGetDetailsUseCase
+    getDetails: LaximoGetDetailsUseCase,
+    getImagesUseCase: LaximoGetImagesUseCase
   ) = LaximoUseCases(
     getCatalogs = getCatalogs,
     getVehicles = getVehicles,
@@ -111,6 +120,7 @@ object LaximoModule {
     getUnits = getUnits,
     getUnit = getUnit,
     getVehicleFormFields = getVehicleFormFields,
-    getDetails = getDetails
+    getDetails = getDetails,
+    getImages = getImagesUseCase
   )
 }

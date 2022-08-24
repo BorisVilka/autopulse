@@ -13,4 +13,6 @@ sealed class OrderScreens(
   }
 
   object Main : OrderScreens("main")
+
+  object Detail: OrderScreens("detail")
 }

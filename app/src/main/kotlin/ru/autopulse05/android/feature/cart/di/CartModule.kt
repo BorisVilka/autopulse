@@ -9,10 +9,7 @@ import ru.autopulse05.android.core.data.source.AppDatabase
 import ru.autopulse05.android.feature.cart.data.remote.CartRemoteService
 import ru.autopulse05.android.feature.cart.data.repository.CartRepositoryImpl
 import ru.autopulse05.android.feature.cart.domain.repository.CartRepository
-import ru.autopulse05.android.feature.cart.domain.use_case.CartAddUseCase
-import ru.autopulse05.android.feature.cart.domain.use_case.CartClearUseCase
-import ru.autopulse05.android.feature.cart.domain.use_case.CartUpdateUseCase
-import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.cart.domain.use_case.*
 import javax.inject.Singleton
 
 @Module
@@ -53,6 +50,16 @@ object CartModule {
 
   @Singleton
   @Provides
+  fun provideCartClearAllUseCase(
+    repository: CartRepository,
+    remoteService: CartRemoteService
+  ) = CartClearAllUseCase(
+    repository = repository,
+    remoteService = remoteService
+  )
+
+  @Singleton
+  @Provides
   fun provideCartGetContentUseCase(
     repository: CartRepository,
     remoteService: CartRemoteService
@@ -66,10 +73,12 @@ object CartModule {
   fun provideCartUseCases(
     add: CartAddUseCase,
     clear: CartClearUseCase,
-    getContent: CartUpdateUseCase
+    getContent: CartUpdateUseCase,
+    clearAllUseCase: CartClearAllUseCase
   ) = CartUseCases(
     add = add,
     clear = clear,
-    update = getContent
+    update = getContent,
+    clearAllUseCase = clearAllUseCase
   )
 }

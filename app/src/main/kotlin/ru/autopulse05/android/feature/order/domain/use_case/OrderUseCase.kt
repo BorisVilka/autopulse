@@ -14,12 +14,12 @@ class OrderUseCase(
   operator fun invoke(
     login: String,
     passwordHash: String,
-    paymentMethod: String,
-    shipmentMethod: String,
+    paymentMethod: String?,
+    shipmentMethod: String?,
     shipmentAddress: String?,
     shipmentOffice: String?,
     shipmentDate: String?,
-    comment: String,
+    comment: String?,
     wholeOrderMode: WholeOrderMode,
     positionIds: Array<Int>
   ): Flow<Data<Unit>> = flow {
@@ -40,12 +40,7 @@ class OrderUseCase(
           positionIds = positionIds
         )
 
-      val data = when (createOrdersDto.status) {
-        ResponseStatus.ERROR -> Data.Error(message = createOrdersDto.errorMessage)
-        else -> Data.Success(value = Unit)
-      }
-
-     emit(data)
+     emit(Data.Success(value = Unit))
     } catch (e: Exception) {
       emit(Data.Error(message = e.message))
     }

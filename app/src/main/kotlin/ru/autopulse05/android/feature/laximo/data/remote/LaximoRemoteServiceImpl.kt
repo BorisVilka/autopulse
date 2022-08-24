@@ -173,6 +173,16 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       )
     }
 
+    private fun createImageDto(parser: XmlPullParser): LaximoImageDto {
+      val map = createAttributeMap(parser)
+
+      return LaximoImageDto(
+        code = map["code"] as String,
+        x1 = map["x1"] as String,
+        y1 = map["y1"] as String
+      )
+    }
+
     private fun createCategoryDto(parser: XmlPullParser): LaximoCategoryDto {
       val map = createAttributeMap(parser)
 
@@ -465,5 +475,23 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       Pair("ssd", ssd)
     )
     return convertPrimitiveToList(response, ::createDetailDto)
+  }
+
+  override suspend fun getImageCodes(
+    login: String,
+    password: String,
+    ssd: String,
+    catalog: String,
+    unitId: String
+  ): List<LaximoImageDto> {
+    val response = call(
+      login = login,
+      password = password,
+      method = LaximoHttpRoutes.LIST_IMAGE_MAP,
+      Pair("Catalog", catalog),
+      Pair("UnitId", unitId),
+      Pair("ssd", ssd)
+    )
+    return convertPrimitiveToList(response, ::createImageDto)
   }
 }

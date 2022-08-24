@@ -28,5 +28,7 @@ fun ProductInfo.toPosition(
   description = description,
   quantity = quantity,
   comment = comment,
-  itemKey = ""
+  itemKey = "",
+  status = "",
+  price = ""
 )

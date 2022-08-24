@@ -8,6 +8,8 @@ object OrderHttpRoutes {
   const val CREATE = "ts/orders/createByCart"
   const val LIST = "ts/orders/list"
   const val PAYMENT = "basket/paymentMethods"
+  const val OFFICE = "basket/shipmentOffices"
+  const val ADDRESS = "basket/shipmentAddress"
 
   // Refunds
   const val COMPLAINTS = "ts/customerComplaints/getPositions"

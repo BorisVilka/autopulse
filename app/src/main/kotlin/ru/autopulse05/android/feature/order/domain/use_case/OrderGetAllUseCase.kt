@@ -25,12 +25,15 @@ class OrderGetAllUseCase(
           passwordHash = passwordHash
         )
         .items
-        .map { it.toOrder() }
+        .entries
+        .map { it.value.toOrder() }
 
       emit(Data.Success(value = orders))
     } catch (e: HttpException) {
+      e.printStackTrace()
       emit(Data.Error(message = e.message, code = e.code()))
     } catch (e: Exception) {
+      e.printStackTrace()
       emit(Data.Error(message = e.message))
     }
   }

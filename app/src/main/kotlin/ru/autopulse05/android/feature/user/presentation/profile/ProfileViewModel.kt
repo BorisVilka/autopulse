@@ -17,6 +17,7 @@ import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.car.domain.model.Car
 import ru.autopulse05.android.feature.car.domain.repository.CarRepository
 import ru.autopulse05.android.feature.car.domain.use_case.CarUseCases
+import ru.autopulse05.android.feature.order.domain.model.Order
 import ru.autopulse05.android.feature.order.domain.use_case.OrderUseCases
 import ru.autopulse05.android.feature.preferences.presentation.Preferences
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
@@ -250,14 +251,20 @@ class ProfileViewModel @Inject constructor(
     }
   }
 
-  public fun editCar(value: Car) {
+  fun editCar(value: Car) {
     viewModelScope.launch {
       _uiEventChannel.send(ProfileUiEvent.EditCar(value = value))
     }
   }
 
+  private fun orderDetail(value: Order) {
+    viewModelScope.launch {
+      _uiEventChannel.send(ProfileUiEvent.OrderDetail(value = value))
+    }
+  }
   fun onEvent(event: ProfileEvent): Unit = when (event) {
     is ProfileEvent.TabChange -> onTabChange(event.value)
     is ProfileEvent.AddCar -> onAddCar()
+    is ProfileEvent.OrderDetail -> orderDetail(event.value)
   }
 }

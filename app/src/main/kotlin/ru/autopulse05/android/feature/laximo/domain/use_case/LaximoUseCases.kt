@@ -9,5 +9,6 @@ data class LaximoUseCases(
   val getCategories: LaximoGetCategoriesUseCase,
   val getUnits: LaximoGetUnitsUseCase,
   val getUnit: LaximoGetUnitUseCase,
-  val getDetails: LaximoGetDetailsUseCase
+  val getDetails: LaximoGetDetailsUseCase,
+  val getImages: LaximoGetImagesUseCase
 )

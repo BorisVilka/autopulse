@@ -3,9 +3,11 @@ package ru.autopulse05.android.feature.user.presentation.profile
 
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.feature.car.presentation.util.CarScreens
 import ru.autopulse05.android.feature.garage.presentation.util.GarageScreens
+import ru.autopulse05.android.feature.order.presentation.util.OrderScreens
 import ru.autopulse05.android.feature.store.presentation.util.StoreScreens
 import ru.autopulse05.android.feature.user.presentation.profile.components.OrderItem
 import ru.autopulse05.android.feature.user.presentation.profile.components.ProfileTabLayout
@@ -57,6 +60,9 @@ fun ProfileScreen(
         is ProfileUiEvent.EditCar -> navController.navigate(
           CarScreens.Edit.withArgs("?car=${event.value.toJson()}")
         )
+        is ProfileUiEvent.OrderDetail -> navController.navigate(
+          OrderScreens.Detail.withArgs("?order=${event.value.toJson()}")
+        )
         is ProfileUiEvent.AddCar -> navController.navigate(
           GarageScreens.Add.route
         )
@@ -72,7 +78,8 @@ fun ProfileScreen(
 
   LoadingScreen(isLoading = state.isLoading) {
     if (state.isNotFound) Box(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.fillMaxSize()
+        .background(color = MaterialTheme.colors.surface),
       contentAlignment = Alignment.Center
     ) {
       Text(
@@ -90,6 +97,7 @@ fun ProfileScreen(
       modifier = Modifier
         .fillMaxSize()
         .verticalScroll(scrollState)
+        .background(color = MaterialTheme.colors.surface)
         .padding(SpaceNormal)
     ) {
       ProfileTabLayout(

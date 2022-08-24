@@ -1,6 +1,7 @@
 package ru.autopulse05.android.feature.order.presentation.util
 
 import ru.autopulse05.android.feature.cart.domain.model.CartItem
+import ru.autopulse05.android.feature.order.data.remote.dto.ShipmentOfficeDto
 import ru.autopulse05.android.feature.order.domain.model.WholeOrderMode
 import ru.autopulse05.android.feature.payment.domain.model.PaymentMethod
 import ru.autopulse05.android.feature.shipment.domain.model.ShipmentMethod
@@ -16,13 +17,7 @@ data class OrderState(
   val comment: FormTextFieldData = FormTextFieldData(),
   val shipmentAddress: FormTextFieldData = FormTextFieldData(),
   val paymentMethod: FormSelectorFieldData<PaymentMethod> = FormSelectorFieldData(),
-  val office: FormSelectorFieldData<String> = FormSelectorFieldData(
-    value = "Магарамкент, с Джепель",
-    items = listOf(
-      "Магарамкент, с Джепель",
-      "Махачкала, С. Стальского, 58"
-    )
-  ),
+  val office: FormSelectorFieldData<ShipmentOfficeDto> = FormSelectorFieldData(),
   val shipmentMethod: FormSelectorFieldData<ShipmentMethod> = FormSelectorFieldData(),
   val termsAgreement: Boolean = true,
   val wholeOrderMode: WholeOrderMode = WholeOrderMode.Off,

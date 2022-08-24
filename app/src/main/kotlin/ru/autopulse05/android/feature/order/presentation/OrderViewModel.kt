@@ -44,49 +44,54 @@ class OrderViewModel @Inject constructor(
   private var orderJob: Job? = null
   private var getShipmentMethodsJob: Job? = null
   private var getPaymentJob: Job? = null
+  private var getOfficesJob: Job? = null
   private val _uiEventChannel = Channel<OrderUiEvent>()
 
   var state by mutableStateOf(OrderState())
   val uiEvents = _uiEventChannel.receiveAsFlow()
 
   private fun onSubmit() {
-    val shipmentAddress = when (state.shipmentMode) {
-      OrderShipmentMode.Pickup -> state.shipmentAddress.value
-      OrderShipmentMode.Delivery -> state.office.value
-    }
-
-    orderJob = orderUseCases
-      .order(
+    orderUseCases
+      .address(
         login = preferencesState.login,
         passwordHash = preferencesState.passwordHash,
-        paymentMethod = state.paymentMethod.value!!.id,
-        shipmentMethod = state.shipmentMethod.value!!.id,
-        shipmentAddress = if(state.shipmentMode==OrderShipmentMode.Pickup) null else state.shipmentAddress.value,
-        shipmentOffice = if(state.shipmentMode==OrderShipmentMode.Pickup) state.office.value!! else null,
-        shipmentDate = null,
-        comment = state.comment.value,
-        wholeOrderMode = state.wholeOrderMode,
-        positionIds = state.positions.map { it.positionId }.toTypedArray()
+        address = state.shipmentAddress.value
       )
-      .onEach { data ->
-        when (data) {
-          is Data.Error -> {
-            Log.e(TAG, "Error during making order: ${data.message}")
+      .onEach {
+        orderJob = orderUseCases
+          .order(
+            login = preferencesState.login,
+            passwordHash = preferencesState.passwordHash,
+            paymentMethod = state.paymentMethod.value!!.id,
+            shipmentMethod = if(state.shipmentMethod.value==null) null else  state.shipmentMethod.value!!.id,
+            shipmentAddress = if(state.shipmentMode==OrderShipmentMode.Pickup) "0" else it.id.toString(),
+            shipmentOffice = if(state.shipmentMode==OrderShipmentMode.Pickup) state.office.value!!.id else null,
+            shipmentDate = null,
+            comment = state.comment.value,
+            wholeOrderMode = state.wholeOrderMode,
+            positionIds = state.positions.map { it.positionId }.toTypedArray()
+          )
+          .onEach { data ->
+            when (data) {
+              is Data.Error -> {
+                Log.e(TAG, "Error during making order: ${data.message}")
 
-            _uiEventChannel.send(OrderUiEvent.Toast(text = stringResource(R.string.error)))
+                _uiEventChannel.send(OrderUiEvent.Toast(text = stringResource(R.string.error)))
 
-            state = state.copy(isLoading = false)
+                state = state.copy(isLoading = false)
+              }
+              is Data.Loading -> state = state.copy(isLoading = true)
+              is Data.Success -> {
+                cartUseCases.update(
+                  login = preferencesState.login,
+                  passwordHash = preferencesState.passwordHash
+                )
+
+                _uiEventChannel.send(OrderUiEvent.Success)
+              }
+            }
           }
-          is Data.Loading -> state = state.copy(isLoading = true)
-          is Data.Success -> {
-            cartUseCases.update(
-              login = preferencesState.login,
-              passwordHash = preferencesState.passwordHash
-            )
-
-            _uiEventChannel.send(OrderUiEvent.Success)
-          }
-        }
+          .launchIn(viewModelScope)
       }
       .launchIn(viewModelScope)
   }
@@ -122,6 +127,39 @@ class OrderViewModel @Inject constructor(
       }
       .launchIn(viewModelScope)
   }
+
+  private fun getOffices() {
+    getOfficesJob?.cancel()
+    getOfficesJob = orderUseCases
+      .offices(
+        login = preferencesState.login,
+        passwordHash = preferencesState.passwordHash
+      )
+      .onEach { data ->
+        state = when (data) {
+          is Data.Error -> {
+            Log.e(TAG, "Error during getting shipment methods: ${data.message}")
+
+            _uiEventChannel.send(OrderUiEvent.Toast(text = stringResource(R.string.error)))
+
+            state.copy(shipmentMethod = state.shipmentMethod.copy(isShowing = false))
+          }
+          is Data.Loading -> state.copy(
+            office = state.office.copy(isShowing = false)
+          )
+          is Data.Success -> state.copy(
+            office = state.office.copy(
+              items = data.value,
+              value = data.value.first(),
+              isShowing = true
+            )
+          )
+        }
+      }
+      .launchIn(viewModelScope)
+  }
+
+
 
   private fun getPayment() {
     getPaymentJob?.cancel()
@@ -169,6 +207,7 @@ class OrderViewModel @Inject constructor(
 
   init {
     getPreferences()
+    getOffices()
     getPayment()
   }
 

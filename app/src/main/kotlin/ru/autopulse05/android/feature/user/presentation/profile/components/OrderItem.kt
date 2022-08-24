@@ -2,6 +2,7 @@ package ru.autopulse05.android.feature.user.presentation.profile.components
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -17,16 +18,19 @@ import ru.autopulse05.android.shared.presentation.util.PresentationText
 @Composable
 fun OrderItem(
   item: Order,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
+  onClick: (Order) -> Unit = {}
 ) {
   Column(
     modifier = modifier
       .shadow(elevation = SpaceSmall)
+      .padding(SpaceNormal)
       .background(color = MaterialTheme.colors.surface, shape = MaterialTheme.shapes.small)
       .padding(SpaceNormal)
+      .clickable { onClick(item) }
       .fillMaxWidth()
   ) {
-    Text(text = item.number)
+    Text(text = item.number.orEmpty())
 
     Spacer(modifier = Modifier.height(SpaceNormal))
 
@@ -34,35 +38,4 @@ fun OrderItem(
       text = PresentationText.Dynamic("Дата: ${item.date}").asString()
     )
   }
-}
-
-@Preview(
-  name = "Order Item",
-  showBackground = true,
-  uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-fun OrderItemPreview() {
-  OrderItem(
-    item = Order(
-      number = "number",
-      positionsQuantity = "positionsQuantity",
-      deliveryAddressId = "deliveryAddressId",
-      deliveryAddress = "deliveryAddress",
-      deliveryOfficeId = "deliveryOfficeId",
-      deliveryOffice = "deliveryOffice",
-      deliveryTypeId = "deliveryTypeId",
-      deliveryType = "deliveryType",
-      paymentTypeId = "paymentTypeId",
-      paymentType = "paymentType",
-      deliveryCost = "deliveryCost",
-      shipmentDate = "shipmentDate",
-      sum = "sum",
-      date = "date",
-      debt = "debt",
-      comment = "comment",
-      clientOrderNumber = "clientOrderNumber",
-      positions = listOf()
-    )
-  )
 }

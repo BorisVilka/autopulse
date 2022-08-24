@@ -40,5 +40,7 @@ fun Product.toPosition(quantity: Int) = Position(
   description = description,
   quantity = quantity,
   comment = "",
-    itemKey = itemKey
+    itemKey = itemKey,
+    status = "",
+    price = price.toString()
 )

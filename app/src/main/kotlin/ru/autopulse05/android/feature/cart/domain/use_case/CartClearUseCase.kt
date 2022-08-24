@@ -15,38 +15,6 @@ class CartClearUseCase(
   private val remoteService: CartRemoteService
 ) {
 
-  operator fun invoke(
-    login: String,
-    passwordHash: String
-  ): Flow<Data<Unit>> = flow {
-    try {
-      emit(Data.Loading())
-
-      val basketClearDto = remoteService.clear(
-        login = login,
-        passwordHash = passwordHash
-      )
-
-      if (basketClearDto.status != ResponseStatus.ERROR) {
-        val basketItems = remoteService
-          .getContent(
-            login = login,
-            passwordHash = passwordHash
-          )
-          .map { it.toCartItem() }
-
-        repository.deleteAll()
-
-        repository.addAll(entities = basketItems)
-
-        emit(Data.Success(value = Unit))
-      } else {
-        emit(Data.Error())
-      }
-    } catch (e: Exception) {
-      emit(Data.Error(message = e.message))
-    }
-  }
 
   operator fun invoke(
     login: String,

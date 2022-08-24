@@ -6,26 +6,26 @@ import ru.autopulse05.android.feature.order.domain.model.Order
 
 
 data class OrderDto(
-  val number: String,
-  val status: String,
-  val statusCode: String,
-  val positionsQuantity: String,
-  val deliveryAddressId: String,
-  val deliveryAddress: String,
-  val deliveryOfficeId: String,
-  val deliveryOffice: String,
-  val deliveryTypeId: String,
-  val deliveryType: String,
-  val paymentTypeId: String,
-  val paymentType: String,
-  val deliveryCost: String,
-  val shipmentDate: String,
-  val sum: String,
-  val date: String,
-  val debt: String,
-  val comment: String,
-  val clientOrderNumber: String,
-  val positions: List<PositionDto>
+  val number: String?,
+  val status: String?,
+  val statusCode: String?,
+  val positionsQuantity: String?,
+  val deliveryAddressId: String?,
+  val deliveryAddress: String?,
+  val deliveryOfficeId: String?,
+  val deliveryOffice: String?,
+  val deliveryTypeId: String?,
+  val deliveryType: String?,
+  val paymentTypeId: String?,
+  val paymentType: String?,
+  val deliveryCost: String?,
+  val shipmentDate: String?,
+  val sum: String?,
+  val date: String?,
+  val debt: String?,
+  val comment: String?,
+  val clientOrderNumber: String?,
+  val positions: List<PositionDto>?
 )
 
 fun OrderDto.toOrder() = Order(
@@ -46,5 +46,5 @@ fun OrderDto.toOrder() = Order(
   debt = debt,
   comment = comment,
   clientOrderNumber = clientOrderNumber,
-  positions = positions.map { it.toPosition() }
+  positions = positions!!.map { it.toPosition() }
 )

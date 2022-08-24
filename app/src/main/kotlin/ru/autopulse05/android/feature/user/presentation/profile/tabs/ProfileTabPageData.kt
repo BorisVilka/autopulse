@@ -1,6 +1,7 @@
 package ru.autopulse05.android.feature.user.presentation.profile.tabs
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,7 @@ fun ProfileTabPageData(
 ) {
   val state = viewModel.state
 
-  if (state.user != null) Column {
+  if (state.user != null) Column(modifier =  Modifier.background(color = MaterialTheme.colors.surface)) {
     Text(
       text = PresentationText.Resource(id = R.string.name).asString(),
       modifier = Modifier.padding(top = SpaceNormal, bottom = SpaceSmall),

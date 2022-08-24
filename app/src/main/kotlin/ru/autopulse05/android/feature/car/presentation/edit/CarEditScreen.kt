@@ -20,6 +20,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.R
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.car.domain.model.Car
@@ -230,7 +231,7 @@ fun CarEditScreen(
         }
       )
 
-      Spacer(modifier = Modifier.height(SpaceSmall))
+      Spacer(modifier = Modifier.height(SpaceLarge))
 
       BigButton(
         onClick = { viewModel.onEvent(CarEditEvent.Submit) },

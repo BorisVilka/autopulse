@@ -90,26 +90,49 @@ class CartViewModel @Inject constructor(
   }
 
   private fun onClear() {
-    clearBasketJob = cartUseCases
-      .clear(
-        login = preferencesState.login,
-        passwordHash = preferencesState.passwordHash,
-        items = state.selected.toList()
-      )
-      .onEach { data ->
-        state = when (data) {
-          is Data.Success -> state.copy(isLoading = false)
-          is Data.Error -> {
-            Log.e(TAG, "Error during basket clear: ${data.message}")
+    clearBasketJob?.cancel()
+    if(state.selected.size == state.items.size) {
+      clearBasketJob = cartUseCases
+        .clearAllUseCase(
+          login = preferencesState.login,
+          passwordHash = preferencesState.passwordHash
+        )
+        .onEach { data ->
+          state = when (data) {
+            is Data.Success -> state.copy(isLoading = false)
+            is Data.Error -> {
+              Log.e(TAG, "Error during basket clear: ${data.message}")
 
-            _uiEventChannel.send(CartUiEvent.Toast(text = stringResource(R.string.error)))
+              _uiEventChannel.send(CartUiEvent.Toast(text = stringResource(R.string.error)))
 
-            state.copy(isLoading = false)
+              state.copy(isLoading = false)
+            }
+            is Data.Loading -> state.copy(isLoading = true)
           }
-          is Data.Loading -> state.copy(isLoading = true)
         }
-      }
-      .launchIn(viewModelScope)
+        .launchIn(viewModelScope)
+    } else {
+      clearBasketJob = cartUseCases
+        .clear(
+          login = preferencesState.login,
+          passwordHash = preferencesState.passwordHash,
+          items = state.selected.toList()
+        )
+        .onEach { data ->
+          state = when (data) {
+            is Data.Success -> state.copy(isLoading = false)
+            is Data.Error -> {
+              Log.e(TAG, "Error during basket clear: ${data.message}")
+
+              _uiEventChannel.send(CartUiEvent.Toast(text = stringResource(R.string.error)))
+
+              state.copy(isLoading = false)
+            }
+            is Data.Loading -> state.copy(isLoading = true)
+          }
+        }
+        .launchIn(viewModelScope)
+    }
   }
 
   override fun onPreferencesChange(preferences: Preferences) {
