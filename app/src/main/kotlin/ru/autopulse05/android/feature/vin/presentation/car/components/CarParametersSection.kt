@@ -104,7 +104,7 @@ fun CarParametersSection(
       Spacer(modifier = Modifier.height(SpaceSmall))
 
       FormDropdownField(
-        items = mark.items.map { it.name },
+        items = mark.items.map { it.name.orEmpty() },
         selectedName = mark.value?.name,
         isShowing = mark.isShowing,
         isDisabled = mark.isDisabled,
@@ -133,7 +133,7 @@ fun CarParametersSection(
       Spacer(modifier = Modifier.height(SpaceExtraSmall))
 
       FormDropdownField(
-        items = model.items.map { it.name },
+        items = model.items.map { it.name.orEmpty() },
         selectedName = model.value?.name,
         isShowing = model.isShowing,
         isDisabled = model.isDisabled,
@@ -146,7 +146,7 @@ fun CarParametersSection(
       Spacer(modifier = Modifier.height(SpaceExtraSmall))
 
       FormDropdownField(
-        items = modification.items.map { it.name },
+        items = modification.items.map { it.name.orEmpty() },
         selectedName = modification.value?.name,
         isShowing = modification.isShowing,
         isDisabled = modification.isDisabled,

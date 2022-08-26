@@ -6,19 +6,19 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "cars")
 data class Car(
   @PrimaryKey val id: String,
-  val name: String,
-  val comment: String,
-  val year: Int,
-  val vin: String,
-  val frame: String,
-  val mileage: String,
-  val manufacturerId: Int,
-  val manufacturer: String,
-  val modelId: Int,
-  val modelName: String,
-  val modificationName: String,
-  val modificationId: Int,
-  val vehicleRegPlate: String
+  val name: String?,
+  val comment: String?,
+  val year: Int?,
+  val vin: String?,
+  val frame: String?,
+  val mileage: String?,
+  val manufacturerId: Int?,
+  val manufacturer: String?,
+  val modelId: Int?,
+  val modelName: String?,
+  val modificationName: String?,
+  val modificationId: Int?,
+  val vehicleRegPlate: String?
 ) {
   val model: CarModel
     get() = CarModel(

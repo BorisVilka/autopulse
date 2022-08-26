@@ -18,16 +18,16 @@ class CarUpdateInGarageUseCase(
     login: String,
     passwordHash: String,
     carId: String,
-    name: String,
-    comment: String,
-    year: Int,
-    vin: String,
-    frame: String,
-    mileage: String,
-    manufacturerId: Int,
-    modelId: Int,
-    modificationId: Int,
-    vehicleRegPlate: String
+    name: String?,
+    comment: String?,
+    year: Int?,
+    vin: String?,
+    frame: String?,
+    mileage: String?,
+    manufacturerId: Int?,
+    modelId: Int?,
+    modificationId: Int?,
+    vehicleRegPlate: String?
   ): Flow<Data<Unit>> = flow {
     try {
       emit(Data.Loading())

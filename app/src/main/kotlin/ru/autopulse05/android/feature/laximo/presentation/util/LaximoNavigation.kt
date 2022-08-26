@@ -8,6 +8,7 @@ import androidx.navigation.navArgument
 import com.google.gson.reflect.TypeToken
 import ru.autopulse05.android.feature.laximo.domain.model.LaximoVehicle
 import ru.autopulse05.android.feature.laximo.presentation.catalogs.CatalogsScreen
+import ru.autopulse05.android.feature.laximo.presentation.catalogs.auto.AutoCatalogsScreen
 import ru.autopulse05.android.feature.laximo.presentation.categories.LaximoCategoriesScreen
 import ru.autopulse05.android.feature.laximo.presentation.unit.LaximoUnitScreen
 import ru.autopulse05.android.feature.laximo.presentation.units.LaximoUnitsScreen
@@ -22,6 +23,9 @@ fun NavGraphBuilder.laximoNavigation(
 ) {
   composable(LaximoScreens.Catalogs.route) {
     CatalogsScreen(navController = navController)
+  }
+  composable(LaximoScreens.Auto.route) {
+    AutoCatalogsScreen(navController = navController)
   }
   composable(
     route = LaximoScreens.VehicleSearch.route + "?catalog={catalog}",

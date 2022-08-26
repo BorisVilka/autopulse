@@ -21,6 +21,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.feature.car.presentation.util.CarScreens
 import ru.autopulse05.android.feature.garage.presentation.util.GarageScreens
+import ru.autopulse05.android.feature.laximo.presentation.util.LaximoScreens
 import ru.autopulse05.android.feature.order.presentation.util.OrderScreens
 import ru.autopulse05.android.feature.store.presentation.util.StoreScreens
 import ru.autopulse05.android.feature.user.presentation.profile.components.OrderItem
@@ -28,6 +29,7 @@ import ru.autopulse05.android.feature.user.presentation.profile.components.Profi
 import ru.autopulse05.android.feature.user.presentation.profile.components.ProfileTabPage
 import ru.autopulse05.android.feature.user.presentation.profile.util.*
 import ru.autopulse05.android.feature.user.presentation.util.UserScreens
+import ru.autopulse05.android.feature.vin.presentation.util.VinScreens
 import ru.autopulse05.android.shared.data.ext.toJson
 import ru.autopulse05.android.shared.presentation.LoadingScreen
 import ru.autopulse05.android.shared.presentation.util.PresentationText
@@ -72,6 +74,12 @@ fun ProfileScreen(
         }
         is ProfileUiEvent.Toast -> Toast.makeText(context, event.text, Toast.LENGTH_LONG).show()
         is ProfileUiEvent.TabChange -> profileTabState.change(event.value)
+        is ProfileUiEvent.OpenVinRequest -> navController.navigate(
+          VinScreens.Parts.route
+        )
+        is ProfileUiEvent.GoToVehicles -> navController.navigate(
+          LaximoScreens.Vehicles.withArgs("?vehicles=${event.vehicles.toJson()}")
+        )
       }
     }
   }

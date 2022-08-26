@@ -56,16 +56,16 @@ interface CarRemoteService {
   suspend fun addCar(
     @Query("userlogin") login: String,
     @Query("userpsw") passwordHash: String,
-    @Query("name") name: String,
-    @Query("comment") comment: String,
-    @Query("year") year: Int,
-    @Query("vin") vin: String,
-    @Query("frame") frame: String,
-    @Query("mileage") mileage: String,
-    @Query("manufacturerId") manufacturerId: Int,
-    @Query("modelId") modelId: Int,
-    @Query("modificationId") modificationId: Int,
-    @Query("vehicleRegPlate") vehicleRegPlate: String
+    @Query("name") name: String?,
+    @Query("comment") comment: String?,
+    @Query("year") year: Int?,
+    @Query("vin") vin: String?,
+    @Query("frame") frame: String?,
+    @Query("mileage") mileage: String?,
+    @Query("manufacturerId") manufacturerId: Int?,
+    @Query("modelId") modelId: Int?,
+    @Query("modificationId") modificationId: Int?,
+    @Query("vehicleRegPlate") vehicleRegPlate: String?
   ): AddCarToGarageDto
 
   @POST(CarHttpRoutes.GARAGE_UPDATE)
@@ -73,16 +73,16 @@ interface CarRemoteService {
     @Query("userlogin") login: String,
     @Query("userpsw") passwordHash: String,
     @Query("carId") carId: String,
-    @Query("name") name: String,
-    @Query("comment") comment: String,
-    @Query("year") year: Int,
-    @Query("vin") vin: String,
-    @Query("frame") frame: String,
-    @Query("mileage") mileage: String,
-    @Query("manufacturerId") manufacturerId: Int,
-    @Query("modelId") modelId: Int,
-    @Query("modificationId") modificationId: Int,
-    @Query("vehicleRegPlate") vehicleRegPlate: String,
+    @Query("name") name: String?,
+    @Query("comment") comment: String?,
+    @Query("year") year: Int?,
+    @Query("vin") vin: String?,
+    @Query("frame") frame: String?,
+    @Query("mileage") mileage: String?,
+    @Query("manufacturerId") manufacturerId: Int?,
+    @Query("modelId") modelId: Int?,
+    @Query("modificationId") modificationId: Int?,
+    @Query("vehicleRegPlate") vehicleRegPlate: String?,
   ): CarDto
 
   @POST(CarHttpRoutes.GARAGE_DELETE)

@@ -24,7 +24,7 @@ fun ModelsDropdownMenu(
   maxHeight: Dp? = 200.dp
 ) = FormDropdownField(
   fieldName = PresentationText.Resource(R.string.model),
-  items = items.map { it.name },
+  items = items.map { it.name.orEmpty() },
   selectedName = selected?.name,
   isShowing = isShowing,
   onMenuClick = onMenuClick,

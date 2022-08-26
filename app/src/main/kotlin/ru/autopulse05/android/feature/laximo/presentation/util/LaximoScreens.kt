@@ -13,6 +13,7 @@ sealed class LaximoScreens(
   }
 
   object Catalogs : LaximoScreens("catalogs")
+  object Auto: LaximoScreens("auto")
   object VehicleSearch : LaximoScreens("vehicle_search")
   object Vehicles : LaximoScreens("vehicles")
   object Units : LaximoScreens("units")

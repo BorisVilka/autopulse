@@ -93,7 +93,7 @@ class VinCarViewModel @Inject constructor(
         VinCarUiEvent.GoToGuest(
           parts = state.parts,
           carInfo = CarInfo(
-            brand = state.mark.value!!.name,
+            brand = state.mark.value!!.name.orEmpty(),
             model = state.model.value!!.name,
             year = state.year.value!!,
             modification = state.modification.value!!.name,
@@ -233,7 +233,7 @@ class VinCarViewModel @Inject constructor(
       .getModels(
         login = login,
         password = passwordHash,
-        markId = state.mark.value!!.id
+        markId = state.mark.value!!.id!!
       )
       .onEach { data ->
         when (data) {
@@ -284,8 +284,8 @@ class VinCarViewModel @Inject constructor(
       .getModifications(
         login = login,
         password = passwordHash,
-        markId = state.mark.value!!.id,
-        modelId = state.model.value!!.id
+        markId = state.mark.value!!.id!!,
+        modelId = state.model.value!!.id!!
       )
       .onEach { data ->
         when (data) {

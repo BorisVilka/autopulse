@@ -95,7 +95,7 @@ fun VinCarsScreen(
 
       state.cars.forEach { car ->
         CarSimpleCard(
-          name = car.name,
+          name = car.name.orEmpty(),
           brand = car.modelName,
           onClick = {
             viewModel.onEvent(VinCarsEvent.CarClick(value = car))

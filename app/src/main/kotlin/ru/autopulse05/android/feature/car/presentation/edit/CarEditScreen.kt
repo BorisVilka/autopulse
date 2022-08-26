@@ -176,8 +176,9 @@ fun CarEditScreen(
         items = state.model.items,
         selected = state.model.value,
         isShowing = state.model.isShowing,
-        isDisabled = state.model.isDisabled,
+        isDisabled = false,
         onMenuClick = {
+          if(state.mark.value?.id!=null)
           viewModel.onEvent(CarEditEvent.ModelsVisibilityChange(value = true))
         },
         onItemClick = { value ->
@@ -192,8 +193,9 @@ fun CarEditScreen(
         items = state.modification.items,
         selected = state.modification.value,
         isShowing = state.modification.isShowing,
-        isDisabled = state.modification.isDisabled,
+        isDisabled = false,
         onMenuClick = {
+          if(state.model.value?.id!=null)
           viewModel.onEvent(CarEditEvent.ModificationsVisibilityChange(value = true))
         },
         onItemClick = { value ->

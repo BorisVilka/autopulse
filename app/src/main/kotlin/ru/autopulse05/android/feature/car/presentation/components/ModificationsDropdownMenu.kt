@@ -23,7 +23,7 @@ fun ModificationsDropdownMenu(
   maxHeight: Dp? = null
 ) = FormDropdownField(
   fieldName = PresentationText.Resource(R.string.car_modifications),
-  items = items.map { it.name },
+  items = items.map { it.name.orEmpty() },
   selectedName = selected?.name,
   isShowing = isShowing,
   isDisabled = isDisabled,

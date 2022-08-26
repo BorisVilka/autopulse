@@ -22,7 +22,7 @@ fun MarksDropdownMenu(
   onDismissRequest: () -> Unit,
   maxHeight: Dp? = null
 ) = FormDropdownField(
-  items = items.map { it.name },
+  items = items.map { it.name.orEmpty() },
   fieldName = PresentationText.Resource(id = R.string.car_mark),
   selectedName = selected?.name,
   isShowing = isShowing,

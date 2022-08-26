@@ -43,6 +43,12 @@ fun ProfileTabPageGarage(
       GarageCar(car = car,
       onClick = {
           viewModel.editCar(it)
+        },
+        requestVinClick = {
+          viewModel.openVinRequest()
+        },
+        originalClick = {
+          viewModel.getVehiclesByVin(vin = car.vin.orEmpty())
         }
       )
       Spacer(modifier = Modifier.height(SpaceSmall))

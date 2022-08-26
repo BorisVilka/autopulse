@@ -1,6 +1,7 @@
 package ru.autopulse05.android.feature.garage.presentation.add
 
 import android.app.Application
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -164,7 +165,7 @@ class AddToGarageViewModel @Inject constructor(
         .getModels(
           login = preferencesState.login,
           password = preferencesState.passwordHash,
-          markId = formState.mark.value!!.id
+          markId = formState.mark.value!!.id!!
         )
         .onEach { data ->
           formState = when (data) {
@@ -214,8 +215,8 @@ class AddToGarageViewModel @Inject constructor(
         .getModifications(
           login = preferencesState.login,
           password = preferencesState.passwordHash,
-          markId = formState.mark.value!!.id,
-          modelId = formState.model.value!!.id
+          markId = formState.mark.value!!.id!!,
+          modelId = formState.model.value!!.id!!
         )
         .onEach { data ->
           formState = when (data) {
@@ -259,20 +260,22 @@ class AddToGarageViewModel @Inject constructor(
         login = preferencesState.login,
         passwordHash = preferencesState.passwordHash,
         name = formState.name.value,
-        year = formState.year.value!!,
+        year = formState.year.value,
         vin = formState.vinCode.value,
         frame = formState.frame.value,
         mileage = formState.mileage.value,
-        manufacturerId = formState.mark.value!!.id,
-        modelId = formState.model.value!!.id,
-        modificationId = formState.modification.value!!.id,
+        manufacturerId = if(formState.mark.value==null) null else formState.mark.value!!.id,
+        modelId = if(formState.model.value==null) null else formState.model.value!!.id,
+        modificationId = if(formState.modification.value==null) null else formState.modification.value!!.id,
         vehicleRegPlate = formState.regPlate.value,
         comment = formState.description.value
       )
       .onEach { data ->
         when (data) {
           is Data.Success -> _uiEventChannel.send(AddToGarageUiEvent.Success)
-          is Data.Error -> {}
+          is Data.Error -> {
+              Toast.makeText(context,"Произошла ошибка при добавлении машины, попробуйте проверить введённые данные",Toast.LENGTH_LONG).show()
+          }
           is Data.Loading -> {}
         }
       }

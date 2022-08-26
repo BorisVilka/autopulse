@@ -67,7 +67,7 @@ class VinAddUseCase(
     accessHash = accessHash,
     clientId = clientId,
     carInfo = CarInfo(
-      brand = mark.name,
+      brand = mark.name.orEmpty(),
       model = model.name,
       year = year,
       modification = modification.name,

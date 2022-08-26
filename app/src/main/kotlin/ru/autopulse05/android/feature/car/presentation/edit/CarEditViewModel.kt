@@ -118,7 +118,7 @@ class CarEditViewModel @Inject constructor(
       .getModels(
         login = preferencesState.login,
         password = preferencesState.passwordHash,
-        markId = state.mark.value!!.id
+        markId = state.mark.value!!.id!!
       )
       .onEach { data ->
         state = when (data) {
@@ -150,8 +150,8 @@ class CarEditViewModel @Inject constructor(
       .getModifications(
         login = preferencesState.login,
         password = preferencesState.passwordHash,
-        markId = state.mark.value!!.id,
-        modelId = state.model.value!!.id
+        markId = state.mark.value!!.id!!,
+        modelId = state.model.value!!.id!!
       )
       .onEach { data ->
         state = when (data) {
@@ -238,6 +238,7 @@ class CarEditViewModel @Inject constructor(
   }
 
   private fun onModificationsVisibilityChanged(value: Boolean) {
+    Log.d("TAG","EVENT MODEL $value")
     if (value) getModifications()
     else state = state.copy(modification = state.modification.copy(isShowing = false))
   }
@@ -293,13 +294,13 @@ class CarEditViewModel @Inject constructor(
         passwordHash = preferencesState.passwordHash,
         carId = state.carId!!,
         name = state.name.value,
-        year = state.year.value!!,
+        year = if(state.year.value==null) null else state.year.value!!,
         vin = state.vin.value,
         frame = state.frame.value,
         mileage = state.mileage.value,
-        manufacturerId = state.mark.value!!.id,
-        modelId = state.model.value!!.id,
-        modificationId = state.modification.value!!.id,
+        manufacturerId = if(state.mark.value==null) null else state.mark.value!!.id,
+        modelId = if(state.model.value==null) null else state.model.value!!.id,
+        modificationId = if(state.modification.value==null) null else state.modification.value!!.id,
         vehicleRegPlate = state.regPlate.value,
         comment = state.description.value
       )
@@ -328,23 +329,25 @@ class CarEditViewModel @Inject constructor(
   }
 
   private fun onInitialValuesChange(car: Car?) {
+    Log.d("TAG","INIT ${car!=null} ${car?.model} ${car?.mark}")
     if (car != null) {
+
       state = state.copy(
         carId = car.id,
         name = state.name.copy(
-          value = car.name
+          value = car.name.orEmpty()
         ),
         year = state.year.copy(
           value = car.year
         ),
         vin = state.vin.copy(
-          value = car.vin
+          value = car.vin.orEmpty()
         ),
         frame = state.frame.copy(
-          value = car.frame
+          value = car.frame.orEmpty()
         ),
         mileage = state.mileage.copy(
-          value = car.mileage
+          value = car.mileage.orEmpty()
         ),
         mark = state.mark.copy(
           value = car.mark
@@ -356,10 +359,10 @@ class CarEditViewModel @Inject constructor(
           value = car.modification
         ),
         regPlate = state.regPlate.copy(
-          value = car.vehicleRegPlate
+          value = car.vehicleRegPlate.orEmpty()
         ),
         description = state.description.copy(
-          value = car.comment
+          value = car.comment.orEmpty()
         )
       )
     }

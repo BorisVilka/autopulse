@@ -4,19 +4,19 @@ import ru.autopulse05.android.feature.car.domain.model.Car
 
 data class CarDto(
   val id: String,
-  val name: String,
-  val comment: String,
-  val year: Int,
+  val name: String?,
+  val comment: String?,
+  val year: Int?,
   val vin: String,
-  val frame: String,
-  val mileage: String,
-  val manufacturerId: Int,
-  val manufacturer: String,
-  val modelId: Int,
-  val model: String,
-  val modification: String,
-  val modificationId: Int,
-  val vehicleRegPlate: String
+  val frame: String?,
+  val mileage: String?,
+  val manufacturerId: Int?,
+  val manufacturer: String?,
+  val modelId: Int?,
+  val model: String?,
+  val modification: String?,
+  val modificationId: Int?,
+  val vehicleRegPlate: String?
 )
 
 fun CarDto.toCar() = Car(

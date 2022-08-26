@@ -17,6 +17,9 @@ import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.car.domain.model.Car
 import ru.autopulse05.android.feature.car.domain.repository.CarRepository
 import ru.autopulse05.android.feature.car.domain.use_case.CarUseCases
+import ru.autopulse05.android.feature.laximo.domain.use_case.LaximoUseCases
+import ru.autopulse05.android.feature.laximo.presentation.catalogs.CatalogsViewModel
+import ru.autopulse05.android.feature.laximo.presentation.catalogs.util.CatalogsUiEvent
 import ru.autopulse05.android.feature.order.domain.model.Order
 import ru.autopulse05.android.feature.order.domain.use_case.OrderUseCases
 import ru.autopulse05.android.feature.preferences.presentation.Preferences
@@ -37,7 +40,8 @@ class ProfileViewModel @Inject constructor(
   private val carRepository: CarRepository,
   private val orderUseCases: OrderUseCases,
   private val userUseCases: UserUseCases,
-  private val carUseCases: CarUseCases
+  private val carUseCases: CarUseCases,
+  private var laximoUseCases: LaximoUseCases
 ) : PreferencesViewModel(application = application) {
   companion object {
     private val TAG = this::class.java.name
@@ -46,6 +50,7 @@ class ProfileViewModel @Inject constructor(
   private var getUserJob: Job? = null
   private var getGarageJob: Job? = null
   private var tabDataJob: Job? = null
+  private var getVehiclesJob: Job? = null
   private val _uiEventChannel = Channel<ProfileUiEvent>()
 
   var state by mutableStateOf(ProfileState())
@@ -257,11 +262,44 @@ class ProfileViewModel @Inject constructor(
     }
   }
 
+  fun openVinRequest() {
+    viewModelScope.launch {
+      _uiEventChannel.send(ProfileUiEvent.OpenVinRequest)
+    }
+  }
+
   private fun orderDetail(value: Order) {
     viewModelScope.launch {
       _uiEventChannel.send(ProfileUiEvent.OrderDetail(value = value))
     }
   }
+
+  fun getVehiclesByVin(vin: String) {
+    getVehiclesJob?.cancel()
+
+    getVehiclesJob = laximoUseCases
+      .getVehiclesByVin(
+        login = preferencesState.laximoLogin,
+        password = preferencesState.laximoPassword,
+        locale = preferencesState.locale,
+        vin = vin
+      )
+      .onEach { data ->
+        when (data) {
+          is Data.Success -> _uiEventChannel.send(ProfileUiEvent.GoToVehicles(vehicles = data.value))
+          is Data.Error -> {
+            Log.e("TAG", "Error while getting laximo vehicles by vin: ${data.message}")
+
+            _uiEventChannel.send(ProfileUiEvent.Toast(text = stringResource(R.string.error)))
+
+            state = state.copy(isLoading = false)
+          }
+          is Data.Loading -> state = state.copy(isLoading = true)
+        }
+      }
+      .launchIn(viewModelScope)
+  }
+
   fun onEvent(event: ProfileEvent): Unit = when (event) {
     is ProfileEvent.TabChange -> onTabChange(event.value)
     is ProfileEvent.AddCar -> onAddCar()

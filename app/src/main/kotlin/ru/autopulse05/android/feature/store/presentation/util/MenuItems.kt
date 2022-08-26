@@ -24,7 +24,7 @@ sealed class MenuItems(
     icon = R.drawable.ic_magnifier_with_wheels,
     title = PresentationText.Resource(R.string.auto_catalogue),
     description = PresentationText.Resource(R.string.selection_of_spare_parts),
-    route = LaximoScreens.Catalogs.route
+    route = LaximoScreens.Auto.route
   )
 
   object RequestByVin : MenuItems(
