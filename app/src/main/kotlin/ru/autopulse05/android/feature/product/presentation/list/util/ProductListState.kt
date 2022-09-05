@@ -6,13 +6,16 @@ import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.domain.util.OrderType
 
 data class ProductListState(
-  val products: PersistentMap<Product, Int> = persistentMapOf(),
-  val isNotFound: Boolean = false,
-  val isLoading: Boolean = true,
-  val number: String = "",
-  val brand: String = "",
-  val order: OrderType = OrderType.Ascending,
-  val deliveryProbabilityDialogIsShowing: Boolean = false,
-  val availabilityFilterIsShowing: Boolean = false,
-  val priceFilterIsShowing: Boolean = false
+    val products: PersistentMap<Product, Int> = persistentMapOf(),
+    val showBasketDialogs: PersistentMap<Product, Boolean> = persistentMapOf(),
+    val showDeliveryDialogs: PersistentMap<Product, Boolean> = persistentMapOf(),
+    val isNotFound: Boolean = false,
+    val isLoading: Boolean = true,
+    val number: String = "",
+    val brand: String = "",
+    val order: OrderType = OrderType.Ascending,
+    val deliveryProbabilityDialogIsShowing: Boolean = false,
+    val availabilityFilterIsShowing: Boolean = false,
+    val priceFilterIsShowing: Boolean = false,
+    val isShowingBasket: Boolean = false
 )

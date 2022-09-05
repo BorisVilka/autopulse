@@ -3,7 +3,6 @@ package ru.autopulse05.android.feature.laximo.presentation.catalogs
 import android.content.res.Configuration
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +11,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +32,7 @@ import ru.autopulse05.android.feature.laximo.presentation.catalogs.util.Catalogs
 import ru.autopulse05.android.feature.laximo.presentation.util.LaximoScreens
 import ru.autopulse05.android.shared.data.ext.toJson
 import ru.autopulse05.android.shared.presentation.LoadingScreen
+import ru.autopulse05.android.shared.presentation.components.SecondaryButton
 import ru.autopulse05.android.shared.presentation.util.PresentationText
 
 @Composable
@@ -102,7 +103,15 @@ fun CatalogsScreen(
         )
       }
       items(items = state.items) {
-        Text(
+        SecondaryButton(
+          text = PresentationText.Dynamic(it.name),
+          modifier = Modifier.padding(SpaceSmall),
+          colors = ButtonDefaults.buttonColors(
+            backgroundColor = MaterialTheme.colors.surface
+          ),
+          onClick = { viewModel.onEvent(CatalogsEvent.OnCatalogClick(it)) }
+        )
+        /*Text(
           text = it.name,
           style = MaterialTheme.typography.body2,
           modifier = Modifier
@@ -110,7 +119,7 @@ fun CatalogsScreen(
             .clickable {
               viewModel.onEvent(CatalogsEvent.OnCatalogClick(it))
             }
-        )
+        )*/
       }
     }
   }

@@ -1,7 +1,12 @@
 package ru.autopulse05.android.feature.order.presentation
 
+import android.app.PendingIntent
+import android.app.appsearch.AppSearchResult
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -33,6 +38,10 @@ import ru.autopulse05.android.shared.presentation.components.CheckboxWithText
 import ru.autopulse05.android.shared.presentation.components.ExpandableCard
 import ru.autopulse05.android.shared.presentation.components.FormTextField
 import ru.autopulse05.android.shared.presentation.util.PresentationText
+import ru.yoomoney.sdk.kassa.payments.Checkout
+import ru.yoomoney.sdk.kassa.payments.checkoutParameters.*
+import java.math.BigDecimal
+import java.util.*
 
 @Composable
 fun OrderScreen(
@@ -44,7 +53,14 @@ fun OrderScreen(
   val state = viewModel.state
   val context = LocalContext.current
   val scrollState = rememberScrollState()
+  val launcher = rememberLauncherForActivityResult(
+    contract = ActivityResultContracts.StartIntentSenderForResult()
+  ) {
+    if (it.resultCode != AppSearchResult.RESULT_OK) {
+      return@rememberLauncherForActivityResult
+    }
 
+  }
   LaunchedEffect(key1 = context) {
     viewModel.onEvent(
       OrderEvent.InitialValuesChange(
@@ -174,7 +190,33 @@ fun OrderScreen(
         modifier = Modifier.padding(top = SpaceNormal),
         text = PresentationText.Resource(R.string.confirm_order),
         onClick = {
-          viewModel.onEvent(event = OrderEvent.Submit)
+          val paymentParameters = PaymentParameters(
+            amount = Amount(BigDecimal.TEN, Currency.getInstance("RUB")),
+            title = "Название товара",
+            subtitle = "Описание товара",
+            clientApplicationKey = "900933", // ключ для клиентских приложений из личного кабинета ЮKassa
+            shopId = "550143", // идентификатор магазина ЮKassa
+            savePaymentMethod = SavePaymentMethod.OFF, // флаг выключенного сохранения платежного метода,
+            paymentMethodTypes = setOf(
+              PaymentMethodType.BANK_CARD,
+              PaymentMethodType.SBERBANK
+            ), // передан весь список доступных методов оплаты
+            gatewayId = null, // gatewayId магазина для платежей Google Pay (необходим в случае, если в способах оплаты есть Google Pay)
+            customReturnUrl = "https://yandex.ru", // url страницы (поддерживается только https), на которую надо вернуться после прохождения 3ds.
+            userPhoneNumber = "+79038970013", // номер телефона пользователя для автозаполнения поля номера телефона пользователя в SberPay. Поддерживаемый формат данных: "+7XXXXXXXXXX"
+            authCenterClientId = "900933" // идентификатор, полученный при регистрации приложения на сайте https://yookassa.ru
+          )
+          val intent = Checkout.createTokenizeIntent(
+            context,
+            paymentParameters,
+            TestParameters(showLogs = true)
+          )
+          val pendIntent =
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+          launcher.launch(
+            IntentSenderRequest.Builder(pendIntent)
+              .build()
+          )
         },
       )
     }

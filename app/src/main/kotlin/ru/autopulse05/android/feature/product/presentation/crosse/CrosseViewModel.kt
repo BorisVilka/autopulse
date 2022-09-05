@@ -14,11 +14,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
 import ru.autopulse05.android.feature.product.domain.model.Crosse
+import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.domain.model.toPosition
 import ru.autopulse05.android.feature.product.domain.use_case.ProductUseCases
-import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
-import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseEvent
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseState
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseUiEvent
@@ -82,7 +82,6 @@ class CrosseViewModel @Inject constructor(
 
   private fun onAddToBasket() {
     if (state.quantity > 0) {
-      val info = state.info!!
 
       cartUseCases
         .add(
@@ -108,12 +107,14 @@ class CrosseViewModel @Inject constructor(
   }
 
   private fun onIncreaseQuantityToAdd() {
+    if (!(state.quantity >= state.product?.packing!! && state.quantity < state.product?.availability!!)) return
     state = state.copy(
       quantity = state.quantity + if (state.packing != 0) state.packing else 1
     )
   }
 
   private fun onDecreaseQuantityToAdd() {
+    if (!(state.quantity > state.product?.packing!! && state.quantity <= state.product?.availability!!)) return
     if (state.quantity > state.packing) {
       state = state.copy(
         quantity = state.quantity - if (state.packing != 0) state.packing else 1
@@ -126,7 +127,9 @@ class CrosseViewModel @Inject constructor(
       crosse = crosse,
       product = product
     )
-
+    state = state.copy(
+      quantity = product.packing
+    )
     getInfo()
   }
 

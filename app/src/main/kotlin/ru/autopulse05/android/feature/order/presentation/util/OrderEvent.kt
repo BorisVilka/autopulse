@@ -1,5 +1,6 @@
 package ru.autopulse05.android.feature.order.presentation.util
 
+import android.content.Context
 import ru.autopulse05.android.feature.cart.domain.model.CartItem
 import ru.autopulse05.android.feature.order.data.remote.dto.ShipmentOfficeDto
 import ru.autopulse05.android.feature.order.domain.model.WholeOrderMode
@@ -16,6 +17,6 @@ sealed class OrderEvent {
   data class OfficeChange(val value: ShipmentOfficeDto) : OrderEvent()
   data class TermsAgreementChange(val value: Boolean) : OrderEvent()
   data class WholeOrderModeChange(val value: WholeOrderMode) : OrderEvent()
-  data class PaymentChange(val value: PaymentMethod): OrderEvent()
-  object Submit : OrderEvent()
+    data class PaymentChange(val value: PaymentMethod) : OrderEvent()
+    data class Submit(val value: Context) : OrderEvent()
 }

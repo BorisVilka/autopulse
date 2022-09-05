@@ -15,14 +15,14 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
 import ru.autopulse05.android.feature.product.domain.model.Crosse
+import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.domain.model.toPosition
 import ru.autopulse05.android.feature.product.domain.use_case.ProductUseCases
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsEvent
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsState
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsUiEvent
-import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
-import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.shared.domain.util.Data
 import javax.inject.Inject
 
@@ -40,6 +40,7 @@ class DetailViewModel @Inject constructor(
   private val _uiEventChannel = Channel<ProductDetailsUiEvent>()
 
   var state by mutableStateOf(ProductDetailsState())
+
   val uiEvents = _uiEventChannel.receiveAsFlow()
 
   private fun getInfo() {
@@ -121,12 +122,14 @@ class DetailViewModel @Inject constructor(
   }
 
   private fun onIncreaseQuantityToAdd() {
+    if (!(state.quantity >= state.product?.packing!! && state.quantity < state.product?.availability!!)) return
     state = state.copy(
       quantity = state.quantity + if (state.packing != 0) state.packing else 1
     )
   }
 
   private fun onDecreaseQuantityToAdd() {
+    if (!(state.quantity > state.product?.packing!! && state.quantity <= state.product?.availability!!)) return
     if (state.quantity > state.packing) {
       state = state.copy(
         quantity = state.quantity - if (state.packing != 0) state.packing else 1
@@ -138,7 +141,9 @@ class DetailViewModel @Inject constructor(
     state = state.copy(
       product = product
     )
-
+    state = state.copy(
+      quantity = product.packing
+    )
     getInfo()
   }
 

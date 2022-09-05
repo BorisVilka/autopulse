@@ -1,6 +1,7 @@
 package ru.autopulse05.android.feature.order.presentation
 
 import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,7 +26,6 @@ import ru.autopulse05.android.feature.shipment.domain.use_case.ShipmentUseCases
 import ru.autopulse05.android.feature.user.domain.repository.UserRepository
 import ru.autopulse05.android.shared.domain.use_case.SharedUseCases
 import ru.autopulse05.android.shared.domain.util.Data
-import ru.autopulse05.android.shared.presentation.util.PresentationText
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,8 +47,10 @@ class OrderViewModel @Inject constructor(
   private var getOfficesJob: Job? = null
   private val _uiEventChannel = Channel<OrderUiEvent>()
 
+
   var state by mutableStateOf(OrderState())
   val uiEvents = _uiEventChannel.receiveAsFlow()
+
 
   private fun onSubmit() {
     orderUseCases
@@ -211,12 +213,17 @@ class OrderViewModel @Inject constructor(
     getPayment()
   }
 
+  fun startTokenize(context: Context) {
+
+  }
+
+
   fun onEvent(event: OrderEvent): Unit = when (event) {
     is OrderEvent.InitialValuesChange -> state = state.copy(
       positions = event.positions,
       isLoading = false
     )
-    is OrderEvent.Submit -> onSubmit()
+    is OrderEvent.Submit -> startTokenize(event.value)
     is OrderEvent.TermsAgreementChange -> state = state.copy(
       termsAgreement = event.value
     )

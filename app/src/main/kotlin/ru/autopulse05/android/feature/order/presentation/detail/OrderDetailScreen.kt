@@ -17,12 +17,9 @@ import androidx.navigation.NavController
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
-import ru.autopulse05.android.feature.cart.domain.model.CartItem
 import ru.autopulse05.android.feature.order.domain.model.Order
-import ru.autopulse05.android.feature.order.presentation.components.PositionItem
 import ru.autopulse05.android.feature.order.presentation.detail.components.DetailItem
 import ru.autopulse05.android.feature.order.presentation.detail.util.OrderDetailEvent
-import ru.autopulse05.android.feature.order.presentation.util.OrderEvent
 import ru.autopulse05.android.shared.presentation.components.ExpandableCard
 import ru.autopulse05.android.shared.presentation.util.PresentationText
 
@@ -68,8 +65,6 @@ fun OrderDetailScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(SpaceSmall))
-
             Row {
                 Text(
                     text = "Тип доставки: ",
@@ -87,6 +82,16 @@ fun OrderDetailScreen(
                 )
                 Text(
                     text = (order.comment.orEmpty())
+                )
+            }
+
+            Row {
+                Text(
+                    text = "Статус: ",
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = order.status
                 )
             }
         }

@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.topbar.TopBar
 import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
+import ru.autopulse05.android.feature.cart.presentation.util.CartScreens
 import ru.autopulse05.android.feature.product.domain.util.OrderType
 import ru.autopulse05.android.feature.product.presentation.list.components.AvailabilityFilterSection
 import ru.autopulse05.android.feature.product.presentation.list.components.DetailItem
@@ -55,12 +56,16 @@ fun ProductListScreen(
 
   LaunchedEffect(key1 = context) {
     viewModel.uiEvents.collect { event ->
-      when (event) {
-        is ProductListUiEvent.GoToProductDetails -> navController.navigate(
-          ProductScreens.Detail.withArgs("?product=${event.value.toJson()}")
-        )
-        is ProductListUiEvent.Toast -> Toast.makeText(context, event.text, Toast.LENGTH_LONG).show()
-      }
+        when (event) {
+            is ProductListUiEvent.GoToProductDetails -> navController.navigate(
+                ProductScreens.Detail.withArgs("?product=${event.value.toJson()}")
+            )
+            is ProductListUiEvent.GoToBasket -> navController.navigate(
+                CartScreens.Main.route
+            )
+            is ProductListUiEvent.Toast -> Toast.makeText(context, event.text, Toast.LENGTH_LONG)
+                .show()
+        }
     }
   }
 
@@ -137,10 +142,10 @@ fun ProductListScreen(
           AvailabilityFilterSection(
             isShowing = state.availabilityFilterIsShowing,
             modifier = Modifier
-              .clickable {
-                viewModel.onEvent(ProductListEvent.FilterByAvailabilityClick(value = OrderType.Ascending))
-              }
-              .align(Alignment.TopEnd)
+                .clickable {
+                    viewModel.onEvent(ProductListEvent.FilterByAvailabilityClick(value = OrderType.Ascending))
+                }
+                .align(Alignment.TopEnd)
           )
 
           Column(Modifier.verticalScroll(scrollState)) {
@@ -150,31 +155,51 @@ fun ProductListScreen(
                 onAddToCartClick = {
                   viewModel.onEvent(ProductListEvent.AddToBasket(value = product))
                 },
-                onIncreaseProductCountClick = {
-                  viewModel.onEvent(ProductListEvent.IncreaseQuantityToAdd(value = product))
-                },
-                onDecreaseProductCountClick = {
-                  viewModel.onEvent(ProductListEvent.DecreaseQuantityToAdd(value = product))
-                },
-                onOpenProductCardClick = {
-                  viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product))
-                },
-                product = product,
-                isShowing = state.deliveryProbabilityDialogIsShowing,
-                onDeliveryProbabilityButtonClick = {
-                  viewModel.onEvent(
-                    ProductListEvent.DeliveryProbabilityDialogVisibilityChange(value = true)
-                  )
-                },
-                onDeliveryDialogDismiss = {
-                  viewModel.onEvent(
-                    ProductListEvent.DeliveryProbabilityDialogVisibilityChange(value = false)
-                  )
-                },
-                showBasket = settingsState.isLoggedIn,
-                quantity = quantity
+                  onIncreaseProductCountClick = {
+                      viewModel.onEvent(ProductListEvent.IncreaseQuantityToAdd(value = product))
+                  },
+                  onDecreaseProductCountClick = {
+                      viewModel.onEvent(ProductListEvent.DecreaseQuantityToAdd(value = product))
+                  },
+                  onOpenProductCardClick = {
+                      viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product))
+                  },
+                  product = product,
+                  isShowing = state.showDeliveryDialogs[product]!!,
+                  onDeliveryProbabilityButtonClick = {
+                      viewModel.onEvent(
+                          ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
+                              value = true,
+                              product
+                          )
+                      )
+                  },
+                  onDeliveryDialogDismiss = {
+                      viewModel.onEvent(
+                          ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
+                              value = false,
+                              product
+                          )
+                      )
+                  },
+                  showBasket = settingsState.isLoggedIn,
+                  quantity = quantity,
+                  isShowingBasket = state.showBasketDialogs[product]!!,
+                  onShowBasketClick = {
+                      viewModel.onEvent(ProductListEvent.ShowingBasketDialog(value = true, product))
+                  },
+                  onDismissBasketDialog = {
+                      viewModel.onEvent(
+                          ProductListEvent.ShowingBasketDialog(
+                              value = false,
+                              product
+                          )
+                      )
+                  },
+                  goToBasket = {
+                      viewModel.goToBasket()
+                  }
               )
-              Divider()
             }
           }
         }

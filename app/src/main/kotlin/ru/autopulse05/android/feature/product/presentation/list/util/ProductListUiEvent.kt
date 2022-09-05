@@ -4,5 +4,6 @@ import ru.autopulse05.android.feature.product.domain.model.Product
 
 sealed class ProductListUiEvent {
   data class GoToProductDetails(val value: Product): ProductListUiEvent()
+  object GoToBasket : ProductListUiEvent()
   data class Toast(val text: String): ProductListUiEvent()
 }

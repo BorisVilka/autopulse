@@ -11,12 +11,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,6 +26,7 @@ import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.ui.theme.*
 import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.presentation.components.CartSection
+import ru.autopulse05.android.shared.presentation.components.BigButton
 import ru.autopulse05.android.shared.presentation.components.BrandNumberSection
 import ru.autopulse05.android.shared.presentation.util.PresentationText
 
@@ -37,8 +38,12 @@ fun DetailItem(
   onDecreaseProductCountClick: () -> Unit,
   onDeliveryDialogDismiss: () -> Unit,
   onDeliveryProbabilityButtonClick: () -> Unit,
+  onShowBasketClick: () -> Unit,
+  onDismissBasketDialog: () -> Unit,
+  goToBasket: () -> Unit,
   isShowing: Boolean,
   showBasket: Boolean,
+  isShowingBasket: Boolean,
   quantity: Int,
   product: Product
 ) {
@@ -46,53 +51,60 @@ fun DetailItem(
   val colors = listOf("#BFF0C5", "#6CEDFE", "#CCF37A", "#84FDE4", "#01FF0B", "#77EF5E", "#84CEFF")
 
   Column(
-    modifier = Modifier.padding(SpaceNormal)
+    modifier = Modifier
+      .padding(SpaceSmall)
+      .shadow(elevation = SpaceSmall)
+      .background(color = MaterialTheme.colors.surface, shape = MaterialTheme.shapes.small)
+      .padding(SpaceNormal)
+      .fillMaxWidth()
   ) {
     Row(
       horizontalArrangement = Arrangement.SpaceBetween,
       verticalAlignment = Alignment.CenterVertically,
       modifier = Modifier.fillMaxWidth()
     ) {
-      BrandNumberSection(
-        brand = product.brand,
-        number = product.number,
+      Row(
         modifier = Modifier
           .clickable { onOpenProductCardClick() }
           .background(color = MaterialTheme.colors.surface)
-          .padding(SpaceSmall)
-      )
-
-      Row {
-        IconButton(
-          onClick = {}
-        ) {
-          Icon(
-            painter = painterResource(id = R.drawable.ic_wheel),
-            contentDescription = PresentationText.Resource(R.string.availability).asString(),
-            tint = Color.BrandYellow,
-            modifier = Modifier.size(32.dp)
-          )
-        }
+      ) {
+        Text(
+          text = product.brand,
+          color = Color.BrandYellow,
+          fontWeight = FontWeight.Bold,
+          fontSize = 18.sp
+        )
 
         Spacer(modifier = Modifier.width(SpaceNormal))
 
-        IconButton(
-          onClick = { onOpenProductCardClick() }
-        ) {
-          Icon(
-            painter = painterResource(id = R.drawable.ic_info),
-            contentDescription = PresentationText.Resource(R.string.info).asString(),
-            tint = Color.BrandYellow,
-            modifier = Modifier.size(32.dp)
-          )
+        Text(
+          text = product.number, color = Color.BrandYellow,
+          fontWeight = FontWeight.Bold,
+          fontSize = 18.sp
+        )
+      }
+
+      IconButton(
+        onClick = {
+          onOpenProductCardClick()
         }
+      ) {
+        Icon(
+          painter = painterResource(id = R.drawable.ic_baseline_more_vert_24),
+          contentDescription = PresentationText.Resource(R.string.delivery_probability)
+            .asString(),
+          modifier = Modifier
+            .size(24.dp)
+            .zIndex(10f),
+        )
       }
     }
 
     Text(
       text = product.description,
       style = MaterialTheme.typography.body2,
-      modifier = Modifier.padding(top = SpaceNormal)
+      modifier = Modifier,
+      fontSize = 16.sp
     )
 
     if (colors.contains(product.supplierColor)) {
@@ -101,9 +113,7 @@ fun DetailItem(
       ) {
         Text(
           text = with(AnnotatedString.Builder()) {
-            withStyle(SpanStyle(color = Color.BrandYellow)) {
-              append(PresentationText.Resource(R.string.warehouse).asString() + " ")
-            }
+            append(PresentationText.Resource(R.string.warehouse).asString() + " ")
             append(
               when (product.supplierColor) {
                 "#BFF0C5", "#6CEDFE", "#77EF5E" -> "Махачкала:"
@@ -161,9 +171,7 @@ fun DetailItem(
       ) {
         Text(
           text = with(AnnotatedString.Builder()) {
-            withStyle(SpanStyle(color = Color.BrandYellow)) {
-              append(PresentationText.Resource(R.string.delivery_deadline).asString() + " ")
-            }
+            append(PresentationText.Resource(R.string.delivery_deadline).asString() + " ")
             if (product.deliveryPeriod == 0) {
               append(" ${product.deliveryPeriod}")
             } else {
@@ -261,6 +269,79 @@ fun DetailItem(
       }
     }
 
+
+
+    if (isShowingBasket) {
+      Dialog(
+        onDismissRequest = { onDismissBasketDialog() }
+      ) {
+        Column(
+          horizontalAlignment = Alignment.CenterHorizontally,
+          modifier = Modifier
+            .background(color = MaterialTheme.colors.background)
+            .padding(SpaceNormal)
+        ) {
+
+          BrandNumberSection(brand = product.brand, number = product.number)
+
+          Spacer(modifier = Modifier.height(SpaceNormal))
+
+          Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.fillMaxWidth()
+          ) {
+            Column {
+              Text(
+                text = "${product.price} ₽",
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+              )
+              Text(
+                text = buildString {
+                  append("${PresentationText.Resource(R.string.availability).asString()} ")
+                  append(
+                    when (product.availability) {
+                      -1 -> "+"
+                      -2 -> "++"
+                      -3 -> "+++"
+                      -10 -> PresentationText.Resource(R.string.not_available).asString()
+                      else -> "${product.availability} " + PresentationText.Resource(R.string.pieces)
+                        .asString()
+                    }
+                  )
+                },
+                fontSize = 14.sp
+              )
+            }
+
+            if (showBasket) CartSection(
+              quantity = quantity,
+              onAddToCartClick = {
+                onAddToCartClick()
+                onDismissBasketDialog()
+              },
+              onIncreaseProductCountClick = {
+                onIncreaseProductCountClick()
+              },
+              onDecreaseProductCountClick = {
+                onDecreaseProductCountClick()
+              }
+            )
+          }
+
+          Spacer(modifier = Modifier.height(SpaceSmall))
+
+          BigButton(
+            onClick = {
+              goToBasket()
+            },
+            text = PresentationText.Dynamic("Перейти в корзину")
+          )
+        }
+      }
+    }
+
     Row(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.SpaceBetween,
@@ -269,7 +350,6 @@ fun DetailItem(
       Column {
         Text(
           text = "${product.price} ₽",
-          fontWeight = FontWeight.Bold,
           fontSize = 18.sp
         )
         Text(
@@ -290,12 +370,23 @@ fun DetailItem(
         )
       }
 
-      if (showBasket) CartSection(
-        quantity = quantity,
-        onAddToCartClick = { onAddToCartClick() },
-        onIncreaseProductCountClick = { onIncreaseProductCountClick() },
-        onDecreaseProductCountClick = { onDecreaseProductCountClick() },
-      )
+      if (showBasket) Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+      ) {
+        IconButton(
+          onClick = { onShowBasketClick() },
+          modifier = Modifier.size(SpaceLarge)
+        ) {
+          Icon(
+            painter = painterResource(id = R.drawable.ic_cart_outlined),
+            contentDescription = stringResource(id = R.string.add_to_cart),
+            tint = Color.BrandYellow
+          )
+        }
+
+        Spacer(modifier = Modifier.width(SpaceSmall))
+      }
     }
   }
 }
@@ -340,7 +431,11 @@ fun DetailItemPreview() {
       code = "",
     ),
     quantity = 1,
-    showBasket = true
+    showBasket = true,
+    isShowingBasket = false,
+    onShowBasketClick = {},
+    onDismissBasketDialog = {},
+    goToBasket = {}
   )
 }
 
@@ -358,6 +453,7 @@ fun DetailItemHiddenPreview() {
     onDecreaseProductCountClick = { },
     onDeliveryDialogDismiss = { },
     onDeliveryProbabilityButtonClick = { },
+    onShowBasketClick = {},
     isShowing = false,
     product = Product(
       brand = "brand",
@@ -384,6 +480,9 @@ fun DetailItemHiddenPreview() {
       code = "",
     ),
     quantity = 1,
-    showBasket = true
+    showBasket = true,
+    isShowingBasket = false,
+    onDismissBasketDialog = {},
+    goToBasket = {}
   )
 }

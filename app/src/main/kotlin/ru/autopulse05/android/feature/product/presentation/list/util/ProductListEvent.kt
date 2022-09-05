@@ -9,9 +9,12 @@ sealed class ProductListEvent {
   data class PriceFilterVisibilityChange(val value: Boolean) : ProductListEvent()
   data class AddToBasket(val value: Product): ProductListEvent()
   data class IncreaseQuantityToAdd(val value: Product): ProductListEvent()
-  data class DecreaseQuantityToAdd(val value: Product): ProductListEvent()
-  data class DeliveryProbabilityDialogVisibilityChange(val value: Boolean): ProductListEvent()
-  data class FilterByPriceClick(val value: OrderType) : ProductListEvent()
+  data class DecreaseQuantityToAdd(val value: Product) : ProductListEvent()
+    data class DeliveryProbabilityDialogVisibilityChange(val value: Boolean, val product: Product) :
+        ProductListEvent()
+
+    data class FilterByPriceClick(val value: OrderType) : ProductListEvent()
   data class AvailabilityFilterVisibilityChange(val value: Boolean) : ProductListEvent()
-  data class FilterByAvailabilityClick(val value: OrderType) : ProductListEvent()
+    data class FilterByAvailabilityClick(val value: OrderType) : ProductListEvent()
+    data class ShowingBasketDialog(val value: Boolean, val product: Product) : ProductListEvent()
 }

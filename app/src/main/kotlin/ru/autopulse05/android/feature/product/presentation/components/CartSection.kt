@@ -18,6 +18,7 @@ import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.shared.presentation.components.QuantitySelector
 
 @Composable
@@ -40,16 +41,18 @@ fun CartSection(
 
     Spacer(modifier = Modifier.width(SpaceNormal))
 
-    IconButton(
-      onClick = { onAddToCartClick() },
-      modifier = Modifier.size(SpaceLarge)
-    ) {
-      Icon(
-        painter = painterResource(id = R.drawable.ic_cart_outlined),
-        contentDescription = stringResource(id = R.string.add_to_cart),
-        tint = Color.BrandYellow
-      )
-    }
+      IconButton(
+          onClick = { onAddToCartClick() },
+          modifier = Modifier.size(SpaceLarge)
+      ) {
+          Icon(
+              painter = painterResource(id = R.drawable.ic_cart_outlined),
+              contentDescription = stringResource(id = R.string.add_to_cart),
+              tint = Color.BrandYellow
+          )
+      }
+
+      Spacer(modifier = Modifier.width(SpaceSmall))
   }
 }
 

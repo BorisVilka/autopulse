@@ -27,7 +27,6 @@ import ru.autopulse05.android.feature.product.presentation.list.util.ProductList
 import ru.autopulse05.android.feature.search.domain.use_case.SearchUseCases
 import ru.autopulse05.android.shared.domain.util.Data
 import javax.inject.Inject
-import kotlin.math.max
 import kotlin.math.min
 
 @HiltViewModel
@@ -73,10 +72,26 @@ class ProductListViewModel @Inject constructor(
             isLoading = false,
             isNotFound = false,
             products = data.value
-              .subList(0, min(40,data.value.size))
-              .sortedWith(compareBy({ it.brand != state.brand },{it.deliveryPeriod},{it.availability}))
+              .subList(0, min(40, data.value.size))
+              .sortedWith(compareBy({ it.brand != state.brand },
+                { it.deliveryPeriod },
+                { it.availability }))
               .associateWith { it.packing }
-              .toPersistentMap()
+              .toPersistentMap(),
+            showBasketDialogs = data.value
+              .subList(0, min(40, data.value.size))
+              .sortedWith(compareBy({ it.brand != state.brand },
+                { it.deliveryPeriod },
+                { it.availability }))
+              .associateWith { false }
+              .toPersistentMap(),
+            showDeliveryDialogs = data.value
+              .subList(0, min(40, data.value.size))
+              .sortedWith(compareBy({ it.brand != state.brand },
+                { it.deliveryPeriod },
+                { it.availability }))
+              .associateWith { false }
+              .toPersistentMap(),
           )
           is Data.Error -> {
             if (data.code == 404) {
@@ -160,6 +175,7 @@ class ProductListViewModel @Inject constructor(
   }
 
   private fun onIncreaseQuantityToAdd(value: Product) {
+    if (state.products[value] == value.availability) return
     state = state.copy(
       products = state.products.mutate {
         val quantity = it[value]!!
@@ -169,6 +185,7 @@ class ProductListViewModel @Inject constructor(
   }
 
   private fun onDecreaseQuantityToAdd(value: Product) {
+    if (state.products[value] == value.packing) return
     state = state.copy(
       products = state.products.mutate {
         val quantity = it[value]!!
@@ -179,6 +196,12 @@ class ProductListViewModel @Inject constructor(
 
   init {
     getPreferences()
+  }
+
+  fun goToBasket() {
+    viewModelScope.launch {
+      _uiEventChannel.send(ProductListUiEvent.GoToBasket)
+    }
   }
 
   fun onEvent(event: ProductListEvent): Unit = when (event) {
@@ -201,7 +224,10 @@ class ProductListViewModel @Inject constructor(
     is ProductListEvent.IncreaseQuantityToAdd -> onIncreaseQuantityToAdd(event.value)
     is ProductListEvent.DecreaseQuantityToAdd -> onDecreaseQuantityToAdd(event.value)
     is ProductListEvent.DeliveryProbabilityDialogVisibilityChange -> state = state.copy(
-      deliveryProbabilityDialogIsShowing = event.value
+      showDeliveryDialogs = state.showDeliveryDialogs.put(event.product, event.value)
+    )
+    is ProductListEvent.ShowingBasketDialog -> state = state.copy(
+      showBasketDialogs = state.showBasketDialogs.put(event.product, event.value)
     )
   }
 }

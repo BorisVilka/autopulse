@@ -8,7 +8,10 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -24,11 +27,11 @@ import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.product.domain.model.Crosse
 import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.presentation.components.CartSection
-import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseEvent
-import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseUiEvent
 import ru.autopulse05.android.feature.product.presentation.components.DeliveryPeriod
 import ru.autopulse05.android.feature.product.presentation.components.PriceAvailabilitySection
 import ru.autopulse05.android.feature.product.presentation.components.ProductImage
+import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseEvent
+import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseUiEvent
 import ru.autopulse05.android.shared.data.remote.HttpRoutes
 import ru.autopulse05.android.shared.presentation.LoadingScreen
 import ru.autopulse05.android.shared.presentation.components.BrandNumberSection
@@ -70,8 +73,9 @@ fun CrosseScreen(
   LoadingScreen(
     isLoading = state.isLoading
   ) {
-    state.info!!
-    state.product!!
+
+    state.info
+    state.product
 
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -81,8 +85,8 @@ fun CrosseScreen(
         .padding(top = SpaceNormal)
     ) {
       BrandNumberSection(
-        brand = state.info.brand,
-        number = state.info.number,
+        brand = state.info?.brand.orEmpty(),
+        number = state.info?.number.orEmpty(),
         modifier = Modifier
           .background(color = MaterialTheme.colors.surface)
           .padding(SpaceSmall)
@@ -104,27 +108,27 @@ fun CrosseScreen(
       }
 
       LazyRow {
-        items(state.info.images) { image ->
+        items(state.info?.images.orEmpty()) { image ->
           ProductImage(url = HttpRoutes.IMAGES_BASE_URL + image.name)
         }
       }
 
       PriceAvailabilitySection(
-        price = state.product.price.toString(),
-        availability = state.product.availability.toString(),
+        price = state.product?.price.toString(),
+        availability = state.product?.availability.toString(),
         modifier = Modifier.padding(SpaceLarge)
       )
 
       DeliveryPeriod(
-        deliveryPeriod = state.product.deliveryPeriod.toString(),
-        deliveryPeriodMax = state.product.deliveryPeriodMax,
-        deadlineReplace = state.product.deadlineReplace,
-        supplierColor = state.product.supplierColor
+        deliveryPeriod = state.product?.deliveryPeriod.toString(),
+        deliveryPeriodMax = state.product?.deliveryPeriodMax.orEmpty(),
+        deadlineReplace = state.product?.deadlineReplace.orEmpty(),
+        supplierColor = state.product?.supplierColor.orEmpty()
       )
 
       Text(
         text = PresentationText.Resource(R.string.update)
-          .asString() + " " + state.product.lastUpdateTime,
+          .asString() + " " + state.product?.lastUpdateTime,
         modifier = Modifier.padding(top = SpaceNormal)
       )
 
