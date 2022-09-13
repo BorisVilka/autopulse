@@ -36,7 +36,7 @@ fun SplashScreen(
     contentAlignment = Alignment.Center
   ) {
     Image(
-      painter = painterResource(id = R.drawable.img_logo),
+      painter = painterResource(id = R.drawable.spalsh),
       contentDescription = PresentationText.Resource(id = R.string.app_logo).asString()
     )
   }

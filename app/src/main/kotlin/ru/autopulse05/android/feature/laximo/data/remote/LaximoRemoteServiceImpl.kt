@@ -1,5 +1,6 @@
 package ru.autopulse05.android.feature.laximo.data.remote
 
+import android.util.Log
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -170,6 +171,30 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
         code = map["code"] as String,
         icon = map["icon"] as String,
         name = map["name"] as String
+      )
+    }
+
+    private fun createApplicationDto(parser: XmlPullParser): LaximoApplicationDto {
+      val map = createAttributeMap(parser)
+
+      Log.d("TAG","${map.size} "+parser.getAttributeValue(null,"model"))
+      for(i in map.entries) Log.d("TAG", i.value+" "+i.key)
+      while(parser.eventType!=XmlPullParser.END_DOCUMENT) {
+        when(parser.eventType) {
+          XmlPullParser.START_TAG -> {
+            if(parser.name=="attribute") {
+              Log.d("TAG","${parser.getProperty("model")} |||")
+            }
+          }
+
+        }
+      }
+      return LaximoApplicationDto(
+        name = map["name"] as String?,
+        model = map["model"],
+        description = parser.getProperty("description") as String?,
+        options = parser.getProperty("Options") as String?,
+        brand = map["brand"] as String?
       )
     }
 
@@ -493,5 +518,24 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       Pair("ssd", ssd)
     )
     return convertPrimitiveToList(response, ::createImageDto)
+  }
+
+  override suspend fun getApplication(
+    login: String,
+    password: String,
+    ssd: String,
+    oem: String,
+    catalog: String,
+    localized: Boolean
+  ):List<LaximoApplicationDto> {
+    val response = call(
+      login = login,
+      password = password,
+      method = LaximoHttpRoutes.LIST_APPLICATION,
+      Pair("OEM", oem),
+      Pair("Catalog", catalog),
+     )
+    Log.d("TAG",response.toString()+" |||")
+    return convertPrimitiveToList(response, ::createApplicationDto)
   }
 }

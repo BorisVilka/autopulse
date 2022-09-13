@@ -87,4 +87,13 @@ interface LaximoRemoteService {
     catalog: String,
     unitId: String,
   ): List<LaximoImageDto>
+
+  suspend fun getApplication(
+    login: String,
+    password: String,
+    ssd: String,
+    catalog: String,
+    oem: String,
+    localized: Boolean = true
+  ): List<LaximoApplicationDto>
 }

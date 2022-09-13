@@ -39,4 +39,10 @@ sealed class ProfileTabs(
     title = PresentationText.Resource(R.string.personal_data),
     draw = { ProfileTabPageData() }
   )
+
+  object Payments : ProfileTabs(
+    index = 6,
+    title = PresentationText.Dynamic("Платежи"),
+    draw = { ProfileTabPageData() }
+  )
 }

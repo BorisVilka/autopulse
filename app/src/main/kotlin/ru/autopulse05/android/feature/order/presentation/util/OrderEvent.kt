@@ -18,5 +18,5 @@ sealed class OrderEvent {
   data class TermsAgreementChange(val value: Boolean) : OrderEvent()
   data class WholeOrderModeChange(val value: WholeOrderMode) : OrderEvent()
     data class PaymentChange(val value: PaymentMethod) : OrderEvent()
-    data class Submit(val value: Context) : OrderEvent()
+    object Submit : OrderEvent()
 }

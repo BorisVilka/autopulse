@@ -1,5 +1,6 @@
 package ru.autopulse05.android.feature.product.domain.use_case
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.autopulse05.android.feature.product.data.remote.CrossImageMode
@@ -39,7 +40,8 @@ class ProductGetInfoUseCase(
           locale = locale,
         )
         .toProductInfo()
-
+      Log.d("TAG","SIZE ${articleInfo.crosses.size}")
+      Log.d("TAG","IMAGES ${articleInfo.images.size}")
       emit(Data.Success(value = articleInfo))
     } catch (e: Exception) {
       emit(Data.Error(message = e.message))

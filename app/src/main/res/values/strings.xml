@@ -161,4 +161,5 @@
   <string name="user_repeated_password_empty_error">Подтвердите пароль</string>
   <string name="user_repeated_password_incorrect_error">Пароли не совпадают</string>
   <string name="user_city_empty_error">Введите город</string>
+  <string name="ym_app_scheme" translatable="false">autopulse05</string>
 </resources>

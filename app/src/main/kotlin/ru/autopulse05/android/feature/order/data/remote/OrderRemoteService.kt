@@ -93,7 +93,7 @@ interface OrderRemoteService {
     @Query("wholeOrderOnly") wholeOrderMode: Int = WholeOrderMode.OFF,
     @Query("positionIds[]") positionIds: Array<Int>? = null,
     @Query("clientOrderNumber") clientOrderNumber: String? = null,
-  )
+  ): OrderDto
 
   // Refunds
   @GET(OrderHttpRoutes.COMPLAINTS)

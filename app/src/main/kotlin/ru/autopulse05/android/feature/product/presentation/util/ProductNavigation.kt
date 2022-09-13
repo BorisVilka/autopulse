@@ -27,7 +27,7 @@ fun NavGraphBuilder.productNavigation(
       },
       navArgument("number") {
         NavType.StringType
-      }
+      },
     )
   ) { entry ->
     ProductListScreen(
@@ -43,12 +43,12 @@ fun NavGraphBuilder.productNavigation(
     arguments = listOf(
       navArgument("product") {
         NavType.StringType
-      }
+      },
     )
   ) { entry ->
     DetailScreen(
       navController = navController,
-      product = entry.arguments?.getString("product")?.fromJson(Product::class.java)
+      product = entry.arguments?.getString("product")?.fromJson(Product::class.java),
     )
   }
   composable(
@@ -64,7 +64,7 @@ fun NavGraphBuilder.productNavigation(
   ) { entry ->
     CrosseScreen(
       crosse = entry.arguments?.getString("crosse")?.fromJson(Crosse::class.java),
-      product = entry.arguments?.getString("product")?.fromJson(Product::class.java)
+      product = entry.arguments?.getString("product")?.fromJson(Product::class.java),
     )
   }
 }

@@ -72,22 +72,19 @@ class ProductListViewModel @Inject constructor(
             isLoading = false,
             isNotFound = false,
             products = data.value
-              .subList(0, min(40, data.value.size))
               .sortedWith(compareBy({ it.brand != state.brand },
                 { it.deliveryPeriod },
                 { it.availability }))
               .associateWith { it.packing }
               .toPersistentMap(),
             showBasketDialogs = data.value
-              .subList(0, min(40, data.value.size))
               .sortedWith(compareBy({ it.brand != state.brand },
                 { it.deliveryPeriod },
                 { it.availability }))
               .associateWith { false }
               .toPersistentMap(),
             showDeliveryDialogs = data.value
-              .subList(0, min(40, data.value.size))
-              .sortedWith(compareBy({ it.brand != state.brand },
+               .sortedWith(compareBy({ it.brand != state.brand },
                 { it.deliveryPeriod },
                 { it.availability }))
               .associateWith { false }

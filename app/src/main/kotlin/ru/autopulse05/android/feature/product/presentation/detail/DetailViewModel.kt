@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.laximo.domain.use_case.LaximoUseCases
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
 import ru.autopulse05.android.feature.product.domain.model.Crosse
 import ru.autopulse05.android.feature.product.domain.model.Product
@@ -30,12 +31,14 @@ import javax.inject.Inject
 class DetailViewModel @Inject constructor(
   application: Application,
   private val productUseCases: ProductUseCases,
-  private val cartUseCases: CartUseCases
+  private val cartUseCases: CartUseCases,
+  private val laximoUseCases: LaximoUseCases
 ) : PreferencesViewModel(application = application) {
   companion object {
     private val TAG = this::class.java.name
   }
-
+  private var getCatalogsJob: Job? = null
+  private var getApplicationJob: Job? = null
   private var getInfoJob: Job? = null
   private val _uiEventChannel = Channel<ProductDetailsUiEvent>()
 
@@ -80,6 +83,48 @@ class DetailViewModel @Inject constructor(
       }
       .launchIn(viewModelScope)
 
+  }
+
+  fun getApplicationLaximo() {
+    getCatalogsJob?.cancel()
+    getCatalogsJob = laximoUseCases.getCatalogs(
+      login = preferencesState.laximoLogin,
+      password = preferencesState.laximoPassword,
+      locale =  "ru_RU"
+    ).onEach { data ->
+      when(data) {
+        is Data.Success -> {
+          for(i in data.value.indices) {
+            Log.d("TAG",data.value[i].brand+" ${data.value[i].name} ${data.value[i].code} "+state.product!!.brand)
+            if(state.product!!.brand.lowercase().contains(data.value[i].brand.lowercase())) {
+              getApplicationJob?.cancel()
+              getApplicationJob = laximoUseCases.getApplication(
+                login = preferencesState.laximoLogin,
+                password = preferencesState.laximoPassword,
+                catalog = state.info!!.number.trim(),
+                ssd = "",
+                oem = data.value[i].code.trim(),
+                locale = preferencesState.locale
+              ).onEach { data ->
+                when(data) {
+                  is Data.Success -> {
+                    Log.d("TAG","SUCCESS")
+                    for(i in data.value.indices) {
+                      Log.d("TAG",data.value[i].name+" !!!! "+data.value[i].brand+" "+data.value[i].description+" "+data.value[i].model
+                      +" "+data.value[i].options)
+                    }
+                  }
+                  is Data.Error -> {
+                    Log.d("TAG","ERROR ${data.message}")
+                  }
+                }
+              }
+                .launchIn(viewModelScope)
+            }
+          }
+        }
+      }
+    }.launchIn(viewModelScope)
   }
 
   private fun onAddToBasket() {

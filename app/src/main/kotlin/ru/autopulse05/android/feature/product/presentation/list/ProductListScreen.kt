@@ -7,6 +7,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
@@ -148,59 +150,58 @@ fun ProductListScreen(
                 .align(Alignment.TopEnd)
           )
 
-          Column(Modifier.verticalScroll(scrollState)) {
-            state.products.forEach { (product, quantity) ->
-
-              DetailItem(
-                onAddToCartClick = {
-                  viewModel.onEvent(ProductListEvent.AddToBasket(value = product))
-                },
-                  onIncreaseProductCountClick = {
-                      viewModel.onEvent(ProductListEvent.IncreaseQuantityToAdd(value = product))
-                  },
-                  onDecreaseProductCountClick = {
-                      viewModel.onEvent(ProductListEvent.DecreaseQuantityToAdd(value = product))
-                  },
-                  onOpenProductCardClick = {
-                      viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product))
-                  },
-                  product = product,
-                  isShowing = state.showDeliveryDialogs[product]!!,
-                  onDeliveryProbabilityButtonClick = {
-                      viewModel.onEvent(
-                          ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
-                              value = true,
-                              product
+          LazyColumn {
+              items(state.products.toList().orEmpty()) { product ->
+                  DetailItem(
+                      onAddToCartClick = {
+                          viewModel.onEvent(ProductListEvent.AddToBasket(value = product.first))
+                      },
+                      onIncreaseProductCountClick = {
+                          viewModel.onEvent(ProductListEvent.IncreaseQuantityToAdd(value = product.first))
+                      },
+                      onDecreaseProductCountClick = {
+                          viewModel.onEvent(ProductListEvent.DecreaseQuantityToAdd(value = product.first))
+                      },
+                      onOpenProductCardClick = {
+                          viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product.first))
+                      },
+                      product = product.first,
+                      isShowing = state.showDeliveryDialogs[product.first]!!,
+                      onDeliveryProbabilityButtonClick = {
+                          viewModel.onEvent(
+                              ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
+                                  value = true,
+                                  product.first
+                              )
                           )
-                      )
-                  },
-                  onDeliveryDialogDismiss = {
-                      viewModel.onEvent(
-                          ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
-                              value = false,
-                              product
+                      },
+                      onDeliveryDialogDismiss = {
+                          viewModel.onEvent(
+                              ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
+                                  value = false,
+                                  product.first
+                              )
                           )
-                      )
-                  },
-                  showBasket = settingsState.isLoggedIn,
-                  quantity = quantity,
-                  isShowingBasket = state.showBasketDialogs[product]!!,
-                  onShowBasketClick = {
-                      viewModel.onEvent(ProductListEvent.ShowingBasketDialog(value = true, product))
-                  },
-                  onDismissBasketDialog = {
-                      viewModel.onEvent(
-                          ProductListEvent.ShowingBasketDialog(
-                              value = false,
-                              product
+                      },
+                      showBasket = settingsState.isLoggedIn,
+                      quantity = product.second,
+                      isShowingBasket = state.showBasketDialogs[product.first]!!,
+                      onShowBasketClick = {
+                          viewModel.onEvent(ProductListEvent.ShowingBasketDialog(value = true, product.first))
+                      },
+                      onDismissBasketDialog = {
+                          viewModel.onEvent(
+                              ProductListEvent.ShowingBasketDialog(
+                                  value = false,
+                                  product.first
+                              )
                           )
-                      )
-                  },
-                  goToBasket = {
-                      viewModel.goToBasket()
-                  }
-              )
-            }
+                      },
+                      goToBasket = {
+                          viewModel.goToBasket()
+                      }
+                  )
+              }
           }
         }
       }

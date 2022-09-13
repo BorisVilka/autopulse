@@ -18,4 +18,5 @@ object LaximoHttpRoutes {
   const val FIND_VEHICLE_BY_WIZARD = "FindVehicleByWizard2"
   const val LIST_DETAIL_BY_UNIT = "ListDetailByUnit"
   const val LIST_IMAGE_MAP = "ListImageMapByUnit"
+  const val LIST_APPLICATION = "FindApplicableVehicles"
 }

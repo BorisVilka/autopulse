@@ -23,6 +23,14 @@ fun ProfileTabLayout(
         profileTabState = profileTabState,
         onCLick = onClick
       )
+      Spacer(modifier = Modifier.width(SpaceSmall))
+
+      ProfileTab(
+        modifier = Modifier.weight(0.33f),
+        tab = ProfileTabs.Payments ,
+        profileTabState = profileTabState,
+        onCLick = onClick
+      )
     }
 
     Row(modifier = Modifier.fillMaxWidth()) {
@@ -41,6 +49,7 @@ fun ProfileTabLayout(
         profileTabState = profileTabState,
         onCLick = onClick
       )
+
     }
   }
 }

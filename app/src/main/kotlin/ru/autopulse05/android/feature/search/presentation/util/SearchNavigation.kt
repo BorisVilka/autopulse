@@ -16,12 +16,12 @@ fun NavGraphBuilder.searchNavigation(
     arguments = listOf(
       navArgument("number") {
         NavType.StringType
-      }
+      },
     )
   ) { entry ->
     SearchScreen(
       navController = navController,
-      number = entry.arguments?.getString("number")
+      number = entry.arguments?.getString("number"),
     )
   }
 }

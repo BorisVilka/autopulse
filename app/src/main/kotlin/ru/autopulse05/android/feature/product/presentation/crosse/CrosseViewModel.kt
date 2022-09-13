@@ -12,6 +12,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
@@ -22,6 +23,8 @@ import ru.autopulse05.android.feature.product.domain.use_case.ProductUseCases
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseEvent
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseState
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseUiEvent
+import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsEvent
+import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsUiEvent
 import ru.autopulse05.android.shared.domain.util.Data
 import javax.inject.Inject
 
@@ -136,11 +139,21 @@ class CrosseViewModel @Inject constructor(
   init {
     getPreferences()
   }
-
+  private fun onOpenCrosseDetails(value: Crosse) {
+    viewModelScope.launch {
+      _uiEventChannel.send(
+        ProductCrosseUiEvent.GoToCrosse(
+          product = state.product!!,
+          crosse = value
+        )
+      )
+    }
+  }
   fun onEvent(event: ProductCrosseEvent): Unit = when (event) {
     is ProductCrosseEvent.InitialValuesChange -> onInitialValuesChange(event.crosse, event.product)
     is ProductCrosseEvent.AddToBasket -> onAddToBasket()
     is ProductCrosseEvent.DecreaseQuantityToAdd -> onDecreaseQuantityToAdd()
     is ProductCrosseEvent.IncreaseQuantityToAdd -> onIncreaseQuantityToAdd()
+    is ProductCrosseEvent.OpenCrosseDetails -> onOpenCrosseDetails(event.value)
   }
 }
