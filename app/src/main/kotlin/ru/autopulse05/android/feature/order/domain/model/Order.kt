@@ -22,5 +22,6 @@ data class Order(
     val comment: String?,
     val clientOrderNumber: String?,
     val status: String,
+    val statusId: String,
     val positions: List<Position>?
 )

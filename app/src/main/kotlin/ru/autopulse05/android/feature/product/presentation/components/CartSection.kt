@@ -46,7 +46,7 @@ fun CartSection(
           modifier = Modifier.size(SpaceLarge)
       ) {
           Icon(
-              painter = painterResource(id = R.drawable.ic_cart_outlined),
+              painter = painterResource(id = R.mipmap.basket_foreground),
               contentDescription = stringResource(id = R.string.add_to_cart),
               tint = Color.BrandYellow
           )

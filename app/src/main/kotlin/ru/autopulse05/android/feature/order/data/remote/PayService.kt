@@ -11,7 +11,7 @@ interface PayService {
     @POST("/v3/payments")
    suspend fun get(
         @Body body: BOdyObject
-        ): StatusDto
+        ): StatusDto?
     @GET("/v3/payments/{id}")
     suspend fun paymentInfo(@Path("id") id: String): StatusDto
 }

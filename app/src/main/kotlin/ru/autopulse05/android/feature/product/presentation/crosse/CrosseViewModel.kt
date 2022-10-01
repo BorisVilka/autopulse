@@ -155,5 +155,8 @@ class CrosseViewModel @Inject constructor(
     is ProductCrosseEvent.DecreaseQuantityToAdd -> onDecreaseQuantityToAdd()
     is ProductCrosseEvent.IncreaseQuantityToAdd -> onIncreaseQuantityToAdd()
     is ProductCrosseEvent.OpenCrosseDetails -> onOpenCrosseDetails(event.value)
+    is ProductCrosseEvent.DeliveryProbabilityDialogVisibilityChange -> state = state.copy(
+      showDeliveryDialog = event.value
+    )
   }
 }

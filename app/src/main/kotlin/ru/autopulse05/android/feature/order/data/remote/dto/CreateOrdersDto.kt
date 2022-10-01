@@ -5,5 +5,5 @@ data class CreateOrdersDto(
   val status: Int,
   val errorMessage: String,
   val clientOrderNumber: String,
-  val orders: List<CreateOrderDto>
+  val orders: Map<String,CreateOrderDto>
 )

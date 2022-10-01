@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.laximo.domain.use_case.LaximoUseCases
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
 import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.domain.model.toPosition
@@ -33,17 +34,60 @@ import kotlin.math.min
 class ProductListViewModel @Inject constructor(
   application: Application,
   private val cartUseCases: CartUseCases,
-  private val searchUseCases: SearchUseCases
+  private val searchUseCases: SearchUseCases,
+  private val laximoUseCases: LaximoUseCases,
 ) : PreferencesViewModel(application = application) {
   companion object {
     private val TAG = this::class.java.name
   }
-
+  private var getCatalogsJob: Job? = null
+  private var getApplicationJob: Job? = null
   private var getProductsJob: Job? = null
   private val _uiEventChannel = Channel<ProductListUiEvent>()
 
   var state by mutableStateOf(ProductListState())
   val uiEvents = _uiEventChannel.receiveAsFlow()
+
+  fun getApplicationLaximo(value: Product) {
+    getCatalogsJob?.cancel()
+    getCatalogsJob = laximoUseCases.getCatalogs(
+      login = preferencesState.laximoLogin,
+      password = preferencesState.laximoPassword,
+      locale =  "ru_RU"
+    ).onEach { data ->
+      when(data) {
+        is Data.Success -> {
+          for(i in data.value.indices) {
+            if(value.brand.lowercase().contains(data.value[i].brand.lowercase())) {
+              getApplicationJob?.cancel()
+              getApplicationJob = laximoUseCases.getApplication(
+                login = preferencesState.laximoLogin,
+                password = preferencesState.laximoPassword,
+                catalog = value.number.trim(),
+                ssd = "",
+                oem = data.value[i].code.trim(),
+                locale = preferencesState.locale
+              ).onEach { data ->
+                when(data) {
+                  is Data.Success -> {
+                    Log.d("TAG","SUCCESS ${data.value.size}")
+                    state = state.copy(
+                      showApplication = true,
+                      applications = data.value
+                    )
+                  }
+                  is Data.Error -> {
+                    Log.d("TAG","ERROR ${data.message}")
+                  }
+                }
+              }
+                .launchIn(viewModelScope)
+            }
+          }
+        }
+      }
+    }.launchIn(viewModelScope)
+  }
 
   private fun getProducts() {
     val login: String
@@ -85,6 +129,12 @@ class ProductListViewModel @Inject constructor(
               .toPersistentMap(),
             showDeliveryDialogs = data.value
                .sortedWith(compareBy({ it.brand != state.brand },
+                { it.deliveryPeriod },
+                { it.availability }))
+              .associateWith { false }
+              .toPersistentMap(),
+            showInfoDialogs = data.value
+              .sortedWith(compareBy({ it.brand != state.brand },
                 { it.deliveryPeriod },
                 { it.availability }))
               .associateWith { false }
@@ -206,7 +256,8 @@ class ProductListViewModel @Inject constructor(
       brand = event.brand,
       number = event.number
     )
-    is ProductListEvent.OpenProductDetails -> onOpenProductDetails(event.value)
+    is ProductListEvent.OpenProductDetails ->onOpenProductDetails(value = event.value)
+    is ProductListEvent.OpenApplication -> getApplicationLaximo(event.value)
     is ProductListEvent.FilterByPriceClick -> onFilterByPrice(event.value)
     is ProductListEvent.PriceFilterVisibilityChange -> state = state.copy(
       priceFilterIsShowing = event.value,
@@ -225,6 +276,9 @@ class ProductListViewModel @Inject constructor(
     )
     is ProductListEvent.ShowingBasketDialog -> state = state.copy(
       showBasketDialogs = state.showBasketDialogs.put(event.product, event.value)
+    )
+    is ProductListEvent.OpenInfoDialog -> state = state.copy(
+      showInfoDialogs = state.showInfoDialogs.put(event.product,event.value)
     )
   }
 }

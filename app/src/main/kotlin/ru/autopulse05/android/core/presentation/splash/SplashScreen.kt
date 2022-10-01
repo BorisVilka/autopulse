@@ -3,6 +3,7 @@ package ru.autopulse05.android.core.presentation.splash
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -15,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.delay
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.ui.theme.SPLASH_SCREEN_DURATION
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.feature.store.presentation.util.StoreScreens
 import ru.autopulse05.android.shared.presentation.util.PresentationText
 
@@ -32,7 +34,7 @@ fun SplashScreen(
   }
 
   Box(
-    modifier = Modifier.fillMaxSize(),
+    modifier = Modifier.fillMaxSize().padding(SpaceLarge),
     contentAlignment = Alignment.Center
   ) {
     Image(

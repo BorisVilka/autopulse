@@ -3,14 +3,11 @@ package ru.autopulse05.android.feature.product.presentation.list
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,12 +17,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.topbar.TopBar
 import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
+import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.cart.presentation.util.CartScreens
 import ru.autopulse05.android.feature.product.domain.util.OrderType
 import ru.autopulse05.android.feature.product.presentation.list.components.AvailabilityFilterSection
@@ -36,6 +39,7 @@ import ru.autopulse05.android.feature.product.presentation.list.util.ProductList
 import ru.autopulse05.android.feature.product.presentation.util.ProductScreens
 import ru.autopulse05.android.shared.data.ext.toJson
 import ru.autopulse05.android.shared.presentation.LoadingScreen
+import ru.autopulse05.android.shared.presentation.components.SecondaryButton
 import ru.autopulse05.android.shared.presentation.popup.PopupState
 import ru.autopulse05.android.shared.presentation.popup.rememberPopupState
 import ru.autopulse05.android.shared.presentation.util.PresentationText
@@ -163,10 +167,25 @@ fun ProductListScreen(
                           viewModel.onEvent(ProductListEvent.DecreaseQuantityToAdd(value = product.first))
                       },
                       onOpenProductCardClick = {
-                          viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product.first))
+                          viewModel.onEvent(ProductListEvent.OpenApplication(value = product.first))
                       },
                       product = product.first,
                       isShowing = state.showDeliveryDialogs[product.first]!!,
+                      showInfo = state.showInfoDialogs[product.first]!!,
+                      onOpenInfoDialog = {
+                          viewModel.onEvent(ProductListEvent.OpenInfoDialog(
+                              value = true,
+                              product = product.first
+                            )
+                          )
+                      },
+                      onDismissInfoDialog = {
+                          viewModel.onEvent(ProductListEvent.OpenInfoDialog(
+                              value = false,
+                              product = product.first
+                             )
+                          )
+                      },
                       onDeliveryProbabilityButtonClick = {
                           viewModel.onEvent(
                               ProductListEvent.DeliveryProbabilityDialogVisibilityChange(
@@ -199,13 +218,110 @@ fun ProductListScreen(
                       },
                       goToBasket = {
                           viewModel.goToBasket()
-                      }
+                      },
+                      onOpenProductDetails = { viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product.first)) }
                   )
               }
           }
         }
       }
     }
+      if(state.showApplication) {
+          Dialog(onDismissRequest = {
+              viewModel.state = viewModel.state.copy(
+                  showApplication = false
+              )
+          },
+              properties = DialogProperties()
+          ) {
+              Column(modifier = Modifier
+                  .fillMaxSize()
+                  .background(MaterialTheme.colors.background)
+              ) {
+                  Text(
+                      text = "Применимость",
+                      style = MaterialTheme.typography.subtitle1,
+                      fontSize = 24.sp,
+                      modifier = Modifier.padding(SpaceNormal)
+                  )
+
+                  LazyRow {
+                      items(state.applications.keys.toList()) {
+
+                          SecondaryButton(
+                              text = PresentationText.Dynamic(it),
+                              modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+                              colors = ButtonDefaults.buttonColors(
+                                  backgroundColor = if (state.choicedBrand == it) {
+                                      MaterialTheme.colors.background
+                                  } else MaterialTheme.colors.surface
+                              ),
+                              onClick = {
+                                  viewModel.state = viewModel.state.copy(
+                                      choicedBrand = it
+                                  )
+                              }
+                          )
+                      }
+                  }
+                  LazyRow {
+                      items(state.applications[state.choicedBrand].orEmpty().toList()) {
+                          SecondaryButton(
+                              text = PresentationText.Dynamic(it.first),
+                              modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+                              colors = ButtonDefaults.buttonColors(
+                                  backgroundColor = if (state.choicedModel == it.first) {
+                                      MaterialTheme.colors.background
+                                  } else MaterialTheme.colors.surface
+                              ),
+                              onClick = {
+                                  viewModel.state = viewModel.state.copy(
+                                      choicedModel = it.first,
+                                      list = it.second
+                                  )
+                              }
+                          )
+                      }
+                  }
+
+                  LazyColumn(modifier = Modifier
+                      .fillMaxSize()
+                      .horizontalScroll(rememberScrollState())
+                  ) {
+                      items(state.list) {
+                          Row(
+                              modifier = Modifier
+                                  .fillMaxSize()
+                                  .padding(SpaceSmall)
+
+                          ) {
+
+                              Text(
+                                  text = "Модель:\n${it.model}",
+                                  style = MaterialTheme.typography.subtitle1
+                              )
+                              Spacer(modifier = Modifier.width(SpaceNormal))
+                              Text(
+                                  text = "Описание:\n${it.desc}",
+                                  style = MaterialTheme.typography.subtitle1
+                              )
+                              Spacer(modifier = Modifier.width(SpaceNormal))
+                              Text(
+                                  text = "Период:\n${it.period}",
+                                  style = MaterialTheme.typography.subtitle1
+                              )
+                              Spacer(modifier = Modifier.width(SpaceNormal))
+                              Text(
+                                  text = "Опции:\n${it.options}",
+                                  style = MaterialTheme.typography.subtitle1
+                              )
+                          }
+                          Divider(color = MaterialTheme.colors.onSecondary, thickness = 1.dp)
+                      }
+                  }
+              }
+          }
+      }
   }
 }
 

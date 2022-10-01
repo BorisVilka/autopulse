@@ -176,25 +176,39 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
 
     private fun createApplicationDto(parser: XmlPullParser): LaximoApplicationDto {
       val map = createAttributeMap(parser)
-
-      Log.d("TAG","${map.size} "+parser.getAttributeValue(null,"model"))
-      for(i in map.entries) Log.d("TAG", i.value+" "+i.key)
+      var model = ""
+      var options = ""
+      var description = ""
+      var period = ""
+      //Log.d("TAG","${map.size} "+parser.getAttributeValue(null,"model"))
+      //for(i in map.entries) Log.d("TAG", i.value+" "+i.key)
       while(parser.eventType!=XmlPullParser.END_DOCUMENT) {
         when(parser.eventType) {
           XmlPullParser.START_TAG -> {
+           // Log.d("TAG",parser.name)
             if(parser.name=="attribute") {
-              Log.d("TAG","${parser.getProperty("model")} |||")
+              when(parser.getAttributeValue(0)) {
+               "model" -> model = parser.getAttributeValue(2)
+                "description" -> description = parser.getAttributeValue(2)
+                "options" -> options = parser.getAttributeValue(2)
+                "prodPeriod" -> period = parser.getAttributeValue(2)
+              }
+              //Log.d("TAG","${parser.getAttributeValue(2)} |||")
             }
           }
-
+          XmlPullParser.END_TAG -> {
+            if(parser.name=="row") break
+          }
         }
+        parser.next()
       }
       return LaximoApplicationDto(
         name = map["name"] as String?,
-        model = map["model"],
-        description = parser.getProperty("description") as String?,
-        options = parser.getProperty("Options") as String?,
-        brand = map["brand"] as String?
+        model = model,
+        description = description,
+        options = options,
+        brand = map["brand"] as String?,
+        period = period
       )
     }
 

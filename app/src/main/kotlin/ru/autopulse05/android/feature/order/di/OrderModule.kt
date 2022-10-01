@@ -31,6 +31,14 @@ object OrderModule {
 
   @Provides
   @Singleton
+  fun provideOrderAddPayCase(
+    remoteService: OrderRemoteService
+  ): OrderAddPayUseCase = OrderAddPayUseCase(
+    remoteService = remoteService
+  )
+
+  @Provides
+  @Singleton
   fun provideOrderInstantUseCase(
     remoteService: OrderRemoteService
   ): OrderInstantUseCase = OrderInstantUseCase(
@@ -128,7 +136,8 @@ object OrderModule {
     validateComment: OrderValidateCommentUseCase,
     payment: OrderGetPaymentUseCase,
     offices: OrderGetOfficesUseCase,
-    addressUseCase: OrderGetShipmentAddressUseCase
+    addressUseCase: OrderGetShipmentAddressUseCase,
+    addPayUseCase: OrderAddPayUseCase
   ) = OrderUseCases(
     cancel = cancel,
     instant = instant,
@@ -141,6 +150,7 @@ object OrderModule {
     validateComment = validateComment,
     payment = payment,
     offices = offices,
-    address = addressUseCase
+    address = addressUseCase,
+    addPay = addPayUseCase
   )
 }

@@ -5,6 +5,7 @@ import ru.autopulse05.android.feature.order.domain.model.Order
 import ru.autopulse05.android.feature.order.domain.model.Picking
 import ru.autopulse05.android.feature.order.domain.model.Refund
 import ru.autopulse05.android.feature.order.domain.model.TsOrder
+import ru.autopulse05.android.feature.user.data.remote.dto.PaymentDto
 import ru.autopulse05.android.feature.user.domain.model.User
 
 
@@ -14,6 +15,7 @@ data class ProfileState(
   val orders: List<Order> = listOf(),
   val pickings: List<Picking> = listOf(),
   val refunds: List<Refund> = listOf(),
+  val payments: List<PaymentDto> = listOf(),
   val isNotFound: Boolean = false,
   val isLoading: Boolean = true
 )

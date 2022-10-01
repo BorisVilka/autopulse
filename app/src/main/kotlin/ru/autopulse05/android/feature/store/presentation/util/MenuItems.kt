@@ -14,23 +14,24 @@ sealed class MenuItems(
 ) {
 
   object OriginalCatalogue : MenuItems(
-    icon = R.drawable.ic_wrench,
+    icon = R.mipmap.auto_catalog_foreground,
     title = PresentationText.Resource(R.string.original_catalogue),
     description = PresentationText.Resource(R.string.search_by_vin),
     route = LaximoScreens.Catalogs.route
   )
 
   object Catalogue : MenuItems(
-    icon = R.drawable.ic_magnifier_with_wheels,
+    icon = R.mipmap.catalogs_foreground,
     title = PresentationText.Resource(R.string.auto_catalogue),
     description = PresentationText.Resource(R.string.selection_of_spare_parts),
     route = LaximoScreens.Auto.route
   )
 
   object RequestByVin : MenuItems(
-    icon = R.drawable.ic_question_mark,
+    icon = R.mipmap.vin_request1_foreground,
     title = PresentationText.Resource(R.string.request_by_vin),
     description = PresentationText.Resource(R.string.manager_select_parts),
-    route = VinScreens.Parts.route
+    route = VinScreens.List.route
   )
+
 }

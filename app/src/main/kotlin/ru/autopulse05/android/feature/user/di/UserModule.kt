@@ -135,6 +135,14 @@ object UserModule {
 
   @Singleton
   @Provides
+  fun provideUserPaymentUseCase(
+    remoteService: UserRemoteService
+  ) = UserGetPaymentsUseCase(
+    remoteService = remoteService
+  )
+
+  @Singleton
+  @Provides
   fun provideUserUseCases(
     getInfo: UserUpdateInfoUseCase,
     sendRestoreCode: UserSendRestoreCodeUseCase,
@@ -147,7 +155,8 @@ object UserModule {
     validateRepeatedPassword: UserValidateRepeatedPasswordUseCase,
     validateCity: UserValidateCityUseCase,
     validateSurname: UserValidateSurnameUseCase,
-    validateSecondName: UserValidateSecondNameUseCase
+    validateSecondName: UserValidateSecondNameUseCase,
+    getPaymentsUseCase: UserGetPaymentsUseCase
   ) = UserUseCases(
     getInfo = getInfo,
     sendRestoreCode = sendRestoreCode,
@@ -160,6 +169,7 @@ object UserModule {
     validateRepeatedPassword = validateRepeatedPassword,
     validateCity = validateCity,
     validateSurname = validateSurname,
-    validateSecondName = validateSecondName
+    validateSecondName = validateSecondName,
+    getPayments = getPaymentsUseCase
   )
 }

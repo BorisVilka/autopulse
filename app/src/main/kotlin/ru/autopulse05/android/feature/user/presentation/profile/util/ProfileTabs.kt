@@ -41,8 +41,8 @@ sealed class ProfileTabs(
   )
 
   object Payments : ProfileTabs(
-    index = 6,
+    index = 7,
     title = PresentationText.Dynamic("Платежи"),
-    draw = { ProfileTabPageData() }
+    draw = { ProfileTabPagePayments() }
   )
 }

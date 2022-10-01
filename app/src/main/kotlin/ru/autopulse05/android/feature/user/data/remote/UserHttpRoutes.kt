@@ -4,4 +4,5 @@ object UserHttpRoutes {
   const val NEW = "user/new"
   const val INFO = "user/info"
   const val RESTORE = "user/sendRestoreCode"
+  const val Payments = "cp/finance/payments"
 }

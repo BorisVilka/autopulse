@@ -21,7 +21,7 @@ val Color.Companion.BrandGreen
   get() = Color(0xFF02952F)
 
 val Color.Companion.BrandYellow
-  get() = Color(0xFF876301)
+  get() = Color(245,148,0)
 
 val Color.Companion.BrandOrange
   get() = Color(0xFFA22F0B)

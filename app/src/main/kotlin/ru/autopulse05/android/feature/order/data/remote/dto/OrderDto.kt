@@ -9,6 +9,7 @@ data class OrderDto(
   val number: String?,
   val status: String?,
   val statusCode: String?,
+  val statusId: String,
   val positionsQuantity: String?,
   val deliveryAddressId: String?,
   val deliveryAddress: String?,
@@ -47,5 +48,6 @@ fun OrderDto.toOrder() = Order(
     comment = comment,
     clientOrderNumber = clientOrderNumber,
     positions = positions!!.map { it.toPosition() },
-    status = status.orEmpty()
+    status = status.orEmpty(),
+  statusId =  statusId
 )

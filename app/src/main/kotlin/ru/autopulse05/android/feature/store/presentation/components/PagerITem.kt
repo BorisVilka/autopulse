@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import ru.autopulse05.android.R
+import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
@@ -40,7 +41,7 @@ fun PagerItem(
             Text(text = title,
                 fontWeight = FontWeight.Bold,
                 fontSize = 26.sp,
-                color = Color.Red)
+                color = Color.BrandYellow)
 
             Spacer(modifier = Modifier.height(SpaceNormal))
 

@@ -42,7 +42,7 @@ class VinCarViewModel @Inject constructor(
   companion object {
     private val TAG = this::class.java.name
   }
-
+  private var getUserJob: Job? = null
   private var getYearsJob: Job? = null
   private var getMarksJob: Job? = null
   private var getModelsJob: Job? = null
@@ -65,16 +65,16 @@ class VinCarViewModel @Inject constructor(
           .add(
             siteHash = preferencesState.siteHash,
             accessHash = preferencesState.accessHash,
-            clientId = preferencesState.clientId,
+            clientId = state.user!!.id,
             vin = state.vin.value,
             frameNumber = state.frameNumber.value,
-            model = state.model.value!!,
-            modification = state.modification.value!!,
-            mark = state.mark.value!!,
-            year = state.year.value!!,
+            model = state.model.value,
+            modification = state.modification.value,
+            mark = state.mark.value,
+            year = state.year.value,
             parts = state.parts,
             stockMode = StockMode.Enable,
-            user = userRepository.get().first()!!
+            user = state.user!!
           )
           .collect { data ->
             when (data) {
@@ -83,7 +83,7 @@ class VinCarViewModel @Inject constructor(
               is Data.Error -> {
                 Log.e(TAG, "Error during adding vin request: ${data.message}")
 
-                _uiEventChannel.send(VinCarUiEvent.Toast(text = stringResource(R.string.error)))
+                _uiEventChannel.send(VinCarUiEvent.Toast(text = "Неверный бренд, попробуйте ещё раз"))
 
                 state = state.copy(isLoading = false)
               }
@@ -122,7 +122,13 @@ class VinCarViewModel @Inject constructor(
         value = car?.modification,
         isDisabled = car == null
       ),
-      parts = parts
+      parts = parts,
+      vin = state.vin.copy(
+        value = car?.vin.orEmpty()
+      ),
+      frameNumber = state.frameNumber.copy(
+        value = car?.frame.orEmpty()
+      )
     )
   }
 
@@ -319,8 +325,21 @@ class VinCarViewModel @Inject constructor(
     )
   }
 
+  private fun getUser() {
+    getUserJob?.cancel()
+
+    getUserJob = userRepository
+      .get()
+      .onEach { entity ->
+        Log.d("TAG","FFF ${entity?.id}")
+        if(entity!=null) state = state.copy(user = entity)
+      }
+      .launchIn(viewModelScope)
+  }
+
   init {
     getPreferences()
+    getUser()
   }
 
   fun onEvent(event: VinCarEvent) = when (event) {

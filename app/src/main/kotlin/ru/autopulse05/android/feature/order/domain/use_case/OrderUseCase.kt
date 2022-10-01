@@ -1,8 +1,10 @@
 package ru.autopulse05.android.feature.order.domain.use_case
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import ru.autopulse05.android.feature.order.data.remote.OrderRemoteService
+import ru.autopulse05.android.feature.order.domain.model.Order
 import ru.autopulse05.android.feature.order.domain.model.WholeOrderMode
 import ru.autopulse05.android.shared.data.remote.ResponseStatus
 import ru.autopulse05.android.shared.domain.util.Data
@@ -22,7 +24,7 @@ class OrderUseCase(
     comment: String?,
     wholeOrderMode: WholeOrderMode,
     positionIds: Array<Int>
-  ): Flow<Data<Unit>> = flow {
+  ): Flow<Data<OrderObject>> = flow {
     try {
       emit(Data.Loading())
 
@@ -39,10 +41,21 @@ class OrderUseCase(
           wholeOrderMode = wholeOrderMode.value,
           positionIds = positionIds
         )
-
-     emit(Data.Success(value = Unit))
+      var obj = OrderObject("",0)
+     for(i in createOrdersDto.orders.values) {
+       Log.d("TAG", i.date + " " + i.sum);
+       obj.date = i.date
+       obj.sum+=i.sum.toInt()
+     }
+     emit(Data.Success(value = obj))
     } catch (e: Exception) {
+      e.printStackTrace()
       emit(Data.Error(message = e.message))
     }
   }
 }
+
+data class OrderObject(
+  var date: String,
+  var sum: Int
+)

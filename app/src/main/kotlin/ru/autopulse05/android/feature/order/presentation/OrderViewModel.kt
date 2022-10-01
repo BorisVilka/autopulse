@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.cart.domain.use_case.CartUseCases
+import ru.autopulse05.android.feature.order.domain.use_case.OrderObject
 import ru.autopulse05.android.feature.order.domain.use_case.OrderUseCases
 import ru.autopulse05.android.feature.order.presentation.util.OrderEvent
 import ru.autopulse05.android.feature.order.presentation.util.OrderShipmentMode
@@ -42,6 +43,7 @@ class OrderViewModel @Inject constructor(
   }
 
   private var orderJob: Job? = null
+  private var addPayJob: Job? = null
   private var getShipmentMethodsJob: Job? = null
   private var getPaymentJob: Job? = null
   private var getUserJob: Job? = null
@@ -54,7 +56,6 @@ class OrderViewModel @Inject constructor(
 
 
   private fun onSubmit() {
-
    if(state.shipmentMode==OrderShipmentMode.Pickup) {
      orderJob = orderUseCases
        .order(
@@ -84,8 +85,8 @@ class OrderViewModel @Inject constructor(
                login = preferencesState.login,
                passwordHash = preferencesState.passwordHash
              )
-
-             _uiEventChannel.send(OrderUiEvent.Success)
+             if(!state.paymentMethod.value!!.name.contentEquals("Наличные при получении")) addPay(data.value)
+             else _uiEventChannel.send(OrderUiEvent.Success)
            }
          }
        }
@@ -126,8 +127,8 @@ class OrderViewModel @Inject constructor(
                    login = preferencesState.login,
                    passwordHash = preferencesState.passwordHash
                  )
-
-                 _uiEventChannel.send(OrderUiEvent.Success)
+                  if(!state.paymentMethod.value!!.name.contentEquals("Наличные при получении")) addPay(data.value)
+                 else _uiEventChannel.send(OrderUiEvent.Success)
                }
              }
            }
@@ -136,6 +137,36 @@ class OrderViewModel @Inject constructor(
        .launchIn(viewModelScope)
    }
   }
+
+  private fun addPay(value: OrderObject) {
+    addPayJob?.cancel()
+
+    addPayJob = orderUseCases.addPay(
+      login = preferencesState.adminLogin,
+      passwordHash = preferencesState.adminPasswordHash,
+      id = state.user!!.id,
+      date = value.date,
+      sum = value.sum,
+      comment = "Оплата заказа"
+    ).onEach {
+        data ->
+      when (data) {
+        is Data.Error -> {
+          Log.e(TAG, "Error during making order: ${data.message}")
+
+          _uiEventChannel.send(OrderUiEvent.Toast(text = stringResource(R.string.error)))
+
+          state = state.copy(isLoading = false)
+        }
+        is Data.Loading -> state = state.copy(isLoading = true)
+        is Data.Success -> {
+          _uiEventChannel.send(OrderUiEvent.Success)
+        }
+      }
+    }
+      .launchIn(viewModelScope)
+  }
+
 
   private fun getShipmentMethods() {
     getShipmentMethodsJob?.cancel()

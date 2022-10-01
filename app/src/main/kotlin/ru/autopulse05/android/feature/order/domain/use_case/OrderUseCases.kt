@@ -19,5 +19,6 @@ data class OrderUseCases(
 
   val payment: OrderGetPaymentUseCase,
   val offices: OrderGetOfficesUseCase,
-  val address: OrderGetShipmentAddressUseCase
+  val address: OrderGetShipmentAddressUseCase,
+  val addPay: OrderAddPayUseCase
 )

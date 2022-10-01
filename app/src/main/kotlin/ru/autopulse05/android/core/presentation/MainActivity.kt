@@ -62,18 +62,16 @@ class MainActivity : ComponentActivity() {
       return  th;
     }
   }
-  fun start(phone: String,sum: Int, callback: (String, String)-> Unit) {
-    Log.d("TAG","PHONE $phone")
+  fun start(sum: Double,subTitle: String, callback: (String, String)-> Unit) {
     this.callback = callback
     val paymentParameters = PaymentParameters(
-      amount = Amount(BigDecimal.valueOf(sum.toLong()), Currency.getInstance("RUB")),
-      title = "Название товара",
-      subtitle = "Описание товара",
+      amount = Amount(BigDecimal.valueOf(sum), Currency.getInstance("RUB")),
+      title = "Оплата заказа",
+      subtitle = subTitle,
       clientApplicationKey = "live_NTUwMTQzmq1-aBdFlUos-GRoVOo8NvoNFNIuBVgyiuU", // ключ для клиентских приложений из личного кабинета ЮKassa
       shopId = "550143", // идентификатор магазина ЮKassa
       savePaymentMethod = SavePaymentMethod.OFF, // флаг выключенного сохранения платежного метода,
       paymentMethodTypes = setOf(PaymentMethodType.SBERBANK,PaymentMethodType.BANK_CARD), // передан весь список доступных методов оплаты
-      userPhoneNumber = "+79038970013"
       )
     val intent = createTokenizeIntent(this, paymentParameters, TestParameters(showLogs = true))
     startActivityForResult(intent,100)
@@ -106,18 +104,22 @@ class MainActivity : ComponentActivity() {
       }
     }
   }
-  fun startConfirmSberPay() {
-    val intent = createConfirmationIntent(this, "https://invoicing/sberpay", PaymentMethodType.SBERBANK)
+  fun startConfirmSberPay(url: String?) {
+    val intent = createConfirmationIntent(this, url!!, PaymentMethodType.SBERBANK)
     startActivityForResult(intent, 101)
   }
-  fun start3DSecure(url: String) {
+  fun start3DSecure(url: String?) {
 
-    val intent = createConfirmationIntent(this, url, PaymentMethodType.BANK_CARD)
+    val intent = createConfirmationIntent(this, url!!, PaymentMethodType.BANK_CARD)
     startActivityForResult(intent, 101)
   }
-  fun confirm(url: String, callback: () -> Unit) {
+  fun confirm(url: String?, callback: () -> Unit) {
+    if(url==null) return
     if(result!!.paymentMethodType.ordinal==PaymentMethodType.BANK_CARD.ordinal) {
       start3DSecure(url)
+      callbackConfirm = callback
+    } else if(result!!.paymentMethodType.ordinal==PaymentMethodType.SBERBANK.ordinal) {
+      startConfirmSberPay(url)
       callbackConfirm = callback
     }
   }

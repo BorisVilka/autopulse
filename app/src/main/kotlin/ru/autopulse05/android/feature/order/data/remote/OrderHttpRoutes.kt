@@ -17,4 +17,6 @@ object OrderHttpRoutes {
 
   // Pickings
   const val PICKINGS = "ts/orderPickings/getGoods"
+
+  const val ADDPAY = "cp/finance/payments"
 }

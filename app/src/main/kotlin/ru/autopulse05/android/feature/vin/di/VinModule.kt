@@ -9,10 +9,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.autopulse05.android.feature.vin.data.remote.VinHttpRoutes
 import ru.autopulse05.android.feature.vin.data.remote.VinRemoteService
-import ru.autopulse05.android.feature.vin.domain.use_case.VinAddUseCase
-import ru.autopulse05.android.feature.vin.domain.use_case.VinUseCases
-import ru.autopulse05.android.feature.vin.domain.use_case.VinValidatePartsUseCase
-import ru.autopulse05.android.feature.vin.domain.use_case.VinValidateUseCase
+import ru.autopulse05.android.feature.vin.domain.use_case.*
 import javax.inject.Singleton
 
 @Module
@@ -41,6 +38,37 @@ object VinModule {
 
   @Provides
   @Singleton
+  fun provideVinListUseCase(
+    remoteService: VinRemoteService
+  ): VinListUseCase = VinListUseCase(
+    remoteService = remoteService
+  )
+
+  @Provides
+  @Singleton
+  fun provideVinChatUseCase(
+    remoteService: VinRemoteService
+  ): VinGetChatUseCase = VinGetChatUseCase(
+    remoteService = remoteService
+  )
+
+  @Provides
+  @Singleton
+  fun provideVinMessageUseCase(
+    remoteService: VinRemoteService
+  ): VinNewMessageUseCase = VinNewMessageUseCase(
+    remoteService = remoteService
+  )
+  @Provides
+  @Singleton
+  fun provideVinUpdateUseCase(
+    remoteService: VinRemoteService
+  ): VinUpdateUseCase = VinUpdateUseCase(
+    remoteService = remoteService
+  )
+
+  @Provides
+  @Singleton
   fun provideVinValidatePartsUseCase(): VinValidatePartsUseCase = VinValidatePartsUseCase()
 
   @Provides
@@ -52,10 +80,18 @@ object VinModule {
   fun provideVinUseCases(
     add: VinAddUseCase,
     validateParts: VinValidatePartsUseCase,
-    validate: VinValidateUseCase
+    validate: VinValidateUseCase,
+    list: VinListUseCase,
+    chat: VinGetChatUseCase,
+    message: VinNewMessageUseCase,
+    updateUseCase: VinUpdateUseCase
   ): VinUseCases = VinUseCases(
     add = add,
     validateParts = validateParts,
-    validate = validate
+    validate = validate,
+    list = list,
+    chat = chat,
+    message = message,
+    update = updateUseCase
   )
 }

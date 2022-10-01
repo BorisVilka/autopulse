@@ -16,4 +16,7 @@ sealed class VinScreens(
   object Guest : VinScreens("guest")
   object Car : VinScreens("car")
   object Cars : VinScreens("cars")
+  object List: VinScreens("list")
+  object Detail: VinScreens("detail")
+  object Chat: VinScreens("chat")
 }

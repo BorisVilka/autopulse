@@ -28,14 +28,20 @@ sealed class NavBarItems(
 
   object Store : NavBarItems(
     title = PresentationText.Resource(R.string.store),
-    icon = R.drawable.ic_home,
+    icon = R.mipmap.shop_foreground,
     route = StoreScreens.Main.route
   )
 
   object Garage : NavBarItems(
     title = PresentationText.Resource(R.string.garage),
-    icon = R.drawable.ic_car,
+    icon = R.mipmap.garage_foreground,
     route = UserScreens.Profile.withArgs("?tabIndex=${ProfileTabs.Garage.index}")
+  )
+
+  object Orders : NavBarItems(
+    title = PresentationText.Dynamic("Заказы"),
+    icon = R.drawable.ic_outline_event_note_24,
+    route = UserScreens.Profile.withArgs("?tabIndex=${ProfileTabs.Orders.index}")
   )
 
   class Basket(
@@ -43,7 +49,7 @@ sealed class NavBarItems(
     badgeIsShowing: Boolean
   ) : NavBarBadgedItems(
     header = PresentationText.Resource(R.string.basket),
-    icon = R.drawable.ic_cart,
+    icon = R.mipmap.basket_foreground,
     route = CartScreens.Main.route,
     badgeText = badgeText,
     badgeIsShowing = badgeIsShowing
@@ -51,7 +57,7 @@ sealed class NavBarItems(
 
   object Profile : NavBarItems(
     title = PresentationText.Resource(R.string.profile),
-    icon = R.drawable.ic_profile,
+    icon = R.mipmap.person_foreground,
     route = UserScreens.Profile.withArgs("?tabIndex=${ProfileTabs.Data.index}"),
   )
 }

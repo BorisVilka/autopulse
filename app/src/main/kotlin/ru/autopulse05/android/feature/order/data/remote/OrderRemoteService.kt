@@ -93,7 +93,7 @@ interface OrderRemoteService {
     @Query("wholeOrderOnly") wholeOrderMode: Int = WholeOrderMode.OFF,
     @Query("positionIds[]") positionIds: Array<Int>? = null,
     @Query("clientOrderNumber") clientOrderNumber: String? = null,
-  ): OrderDto
+  ): CreateOrdersDto
 
   // Refunds
   @GET(OrderHttpRoutes.COMPLAINTS)
@@ -159,4 +159,17 @@ interface OrderRemoteService {
     @Query("userpsw") passwordHash: String,
     @Query("address") address: String
   ): ShipmentAddressDto
+
+
+  @POST(OrderHttpRoutes.ADDPAY)
+  suspend fun addPay(
+    @Query("userlogin") login: String,
+    @Query("userpsw") passwordHash: String,
+    @Query("linkPayments") link: Int = 1,
+    @Query("payments[0][userId]") id: String,
+    @Query("payments[0][createDateTime]") date: String,
+    @Query("payments[0][amount]") sum: Int,
+    @Query("payments[0][paymentTypeId]") type: Int = 11997,
+    @Query("payments[0][comment]") comment: String
+  )
 }

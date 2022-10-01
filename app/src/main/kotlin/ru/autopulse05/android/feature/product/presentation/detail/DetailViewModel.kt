@@ -24,6 +24,7 @@ import ru.autopulse05.android.feature.product.domain.use_case.ProductUseCases
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsEvent
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsState
 import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsUiEvent
+import ru.autopulse05.android.feature.product.presentation.list.util.ProductListEvent
 import ru.autopulse05.android.shared.domain.util.Data
 import javax.inject.Inject
 
@@ -108,11 +109,11 @@ class DetailViewModel @Inject constructor(
               ).onEach { data ->
                 when(data) {
                   is Data.Success -> {
-                    Log.d("TAG","SUCCESS")
-                    for(i in data.value.indices) {
-                      Log.d("TAG",data.value[i].name+" !!!! "+data.value[i].brand+" "+data.value[i].description+" "+data.value[i].model
-                      +" "+data.value[i].options)
-                    }
+                    Log.d("TAG","SUCCESS ${data.value.size}")
+                    state = state.copy(
+                      showApplication = true,
+                      applications = data.value
+                    )
                   }
                   is Data.Error -> {
                     Log.d("TAG","ERROR ${data.message}")
@@ -202,5 +203,8 @@ class DetailViewModel @Inject constructor(
     is ProductDetailsEvent.AddToBasket -> onAddToBasket()
     is ProductDetailsEvent.DecreaseQuantityToAdd -> onDecreaseQuantityToAdd()
     is ProductDetailsEvent.IncreaseQuantityToAdd -> onIncreaseQuantityToAdd()
+    is ProductDetailsEvent.DeliveryProbabilityDialogVisibilityChange -> state = state.copy(
+      showDeliveryDialog = event.value
+    )
   }
 }

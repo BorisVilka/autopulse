@@ -1,6 +1,7 @@
 package ru.autopulse05.android.core.presentation.navbar
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -52,6 +53,7 @@ fun NavBar(
   val items = listOf(
     NavBarItems.Store,
     NavBarItems.Garage,
+    NavBarItems.Orders,
     NavBarItems.Basket(
       badgeText = PresentationText.Dynamic(state.basketItemsCount.toString()),
       badgeIsShowing = state.basketItemsCount > 0
@@ -59,7 +61,7 @@ fun NavBar(
     NavBarItems.Profile
   )
 
-  BottomNavigation(backgroundColor = MaterialTheme.colors.secondary) {
+  BottomNavigation(backgroundColor = MaterialTheme.colors.onPrimary) {
     items.forEach {
 
         BottomNavigationItem(
@@ -68,16 +70,18 @@ fun NavBar(
                 profileTabState.current == ProfileTabs.Data
             is NavBarItems.Garage -> currentDestination?.startsWith(UserScreens.Profile.route) ?: false &&
                 profileTabState.current == ProfileTabs.Garage
+            is NavBarItems.Orders -> currentDestination?.startsWith(UserScreens.Profile.route) ?: false &&
+                    profileTabState.current == ProfileTabs.Orders
             else -> currentDestination?.startsWith(it.route) ?: false
           },
           selectedContentColor = Color.BrandYellow,
-          unselectedContentColor = MaterialTheme.colors.onSurface,
+          unselectedContentColor = Color.Gray,
           icon = {
             BadgedBox(
               badge = {
                 if (it is NavBarItems.NavBarBadgedItems && it.badgeIsShowing) {
                   Badge(
-                    backgroundColor = Color.BrandOrange
+                    backgroundColor = Color.BrandYellow
                   ) {
                     Text(
                       text = it.badgeText.asString()

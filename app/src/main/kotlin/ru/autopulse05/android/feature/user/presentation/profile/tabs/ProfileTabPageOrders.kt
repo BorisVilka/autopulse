@@ -30,6 +30,9 @@ fun ProfileTabPageOrders(
         item = order,
         onClick = {
           viewModel.onEvent(ProfileEvent.OrderDetail(value = it))
+        },
+        payClick = {
+          viewModel.onEvent(ProfileEvent.OrderDetail(value = it))
         }
       )
     }

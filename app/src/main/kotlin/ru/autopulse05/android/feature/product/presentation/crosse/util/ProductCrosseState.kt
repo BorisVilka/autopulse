@@ -14,5 +14,6 @@ data class ProductCrosseState(
   val code: String = "",
   val supplierCode: String = "",
   val description: String = "",
-  val quantity: Int = 0
+  val quantity: Int = 0,
+  val showDeliveryDialog: Boolean = false
 )

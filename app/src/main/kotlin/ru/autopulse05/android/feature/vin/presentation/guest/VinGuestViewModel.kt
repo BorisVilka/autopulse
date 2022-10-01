@@ -7,12 +7,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
+import ru.autopulse05.android.feature.user.domain.repository.UserRepository
+import ru.autopulse05.android.feature.user.domain.use_case.UserUseCases
 import ru.autopulse05.android.feature.vin.domain.model.CarInfo
 import ru.autopulse05.android.feature.vin.domain.model.GuestInfo
 import ru.autopulse05.android.feature.vin.domain.model.StockMode
@@ -29,12 +32,14 @@ import javax.inject.Inject
 class VinGuestViewModel @Inject constructor(
   application: Application,
   private val vinUseCases: VinUseCases,
+  private val userUseCases: UserUseCases,
+  private val userRepository: UserRepository,
   private val sharedUseCases: SharedUseCases
 ) : PreferencesViewModel(application = application) {
   companion object {
     private val TAG = this::class.java.name
   }
-
+  private var getUserJob: Job? = null
   private val _uiEventChannel = Channel<VinGuestUiEvent>()
 
   var state by mutableStateOf(VinGuestState())
@@ -49,7 +54,16 @@ class VinGuestViewModel @Inject constructor(
       parts = parts
     )
   }
+  private fun getUser() {
+    getUserJob?.cancel()
 
+    getUserJob = userRepository
+      .get()
+      .onEach { entity ->
+        state = state.copy(user = entity)
+      }
+      .launchIn(viewModelScope)
+  }
   private fun onSubmit() {
     val nameResult = sharedUseCases.validateName(
       value = state.name.value
@@ -72,7 +86,7 @@ class VinGuestViewModel @Inject constructor(
         .add(
           siteHash = preferencesState.siteHash,
           accessHash = preferencesState.accessHash,
-          clientId = preferencesState.clientId,
+          clientId = state.user!!.id,
           carInfo = state.carInfo!!,
           parts = state.parts,
           stockMode = StockMode.Enable,
@@ -80,7 +94,8 @@ class VinGuestViewModel @Inject constructor(
             name = state.name.value,
             phone = state.phone.value,
             email = state.email.value,
-          )
+          ),
+          comment = null
         )
         .onEach { data ->
           when (data) {
@@ -111,6 +126,7 @@ class VinGuestViewModel @Inject constructor(
 
   init {
     getPreferences()
+    getUser()
   }
 
   fun onEvent(event: VinGuestEvent) = when (event) {

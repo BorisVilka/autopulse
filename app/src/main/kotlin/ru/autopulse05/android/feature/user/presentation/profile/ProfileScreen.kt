@@ -47,6 +47,7 @@ fun ProfileScreen(
   val context = LocalContext.current
   val tabs = listOf(
     ProfileTabs.Orders,
+    ProfileTabs.Payments,
     ProfileTabs.Garage,
     ProfileTabs.Data
   )

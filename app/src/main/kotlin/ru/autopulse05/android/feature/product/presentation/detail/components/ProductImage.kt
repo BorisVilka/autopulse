@@ -4,7 +4,10 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,7 +27,17 @@ fun ProductImage(
     GlideImage(
       imageModel = url,
       contentDescription = PresentationText.Resource(R.string.product_photo).asString(),
-      modifier = Modifier.height(200.dp)
+      modifier = Modifier.height(200.dp),
+      failure = {
+        Text(text = "Изображение не найдено")
+      },
+      loading = {
+        Box(modifier = Modifier.matchParentSize()) {
+          CircularProgressIndicator(
+            modifier = Modifier.align(Alignment.Center)
+          )
+        }
+      },
     )
   }
 }

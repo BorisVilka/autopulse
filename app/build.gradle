@@ -11,7 +11,7 @@ android {
 
   defaultConfig {
     applicationId "ru.autopulse05.autopulse05"
-    minSdk 23
+    minSdk 26
     targetSdk 33
     versionCode 1
     versionName "1.0"
@@ -58,7 +58,7 @@ kapt {
 
 dependencies {
   implementation 'com.google.accompanist:accompanist-pager:0.26.2-beta'
-  implementation 'ru.yoomoney.sdk.kassa.payments:yookassa-android-sdk:6.5.3'
+  implementation 'ru.yoomoney.sdk.kassa.payments:yookassa-android-sdk:6.5.2'
   // Core
   implementation 'androidx.core:core-ktx:1.8.0'
   implementation 'androidx.appcompat:appcompat:1.4.2'

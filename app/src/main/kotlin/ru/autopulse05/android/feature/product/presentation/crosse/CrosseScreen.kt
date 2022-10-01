@@ -8,22 +8,19 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import ru.autopulse05.android.R
-import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
-import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
-import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
+import ru.autopulse05.android.core.presentation.ui.theme.*
 import ru.autopulse05.android.feature.product.domain.model.Crosse
 import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.presentation.components.CartSection
@@ -32,10 +29,13 @@ import ru.autopulse05.android.feature.product.presentation.components.PriceAvail
 import ru.autopulse05.android.feature.product.presentation.components.ProductImage
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseEvent
 import ru.autopulse05.android.feature.product.presentation.crosse.util.ProductCrosseUiEvent
+import ru.autopulse05.android.feature.product.presentation.detail.util.ProductDetailsEvent
+import ru.autopulse05.android.feature.product.presentation.list.components.PieChart
 import ru.autopulse05.android.shared.data.remote.HttpRoutes
 import ru.autopulse05.android.shared.presentation.LoadingScreen
 import ru.autopulse05.android.shared.presentation.components.BrandNumberSection
 import ru.autopulse05.android.shared.presentation.util.PresentationText
+import kotlin.math.min
 
 @Composable
 fun CrosseScreen(
@@ -91,25 +91,15 @@ fun CrosseScreen(
           .background(color = MaterialTheme.colors.surface)
           .padding(SpaceSmall)
       )
-
-      if (state.description.isNotEmpty()) {
-        Text(
-          text = state.description,
-          style = MaterialTheme.typography.body2,
-          textAlign = TextAlign.Center,
-          modifier = Modifier.padding(SpaceNormal)
-        )
-      } else {
-        Text(
-          text = state.description,
-          style = MaterialTheme.typography.body2,
-          modifier = Modifier.padding(SpaceNormal)
-        )
-      }
-
+      Spacer(modifier = Modifier.height(SpaceNormal))
       LazyRow {
         items(state.info?.images.orEmpty()) { image ->
           ProductImage(url = HttpRoutes.IMAGES_BASE_URL + image.name)
+        }
+        if(state.info?.images!!.isEmpty()) {
+          items(1) {
+            ProductImage(url = HttpRoutes.IMAGES_BASE_URL)
+          }
         }
       }
 
@@ -119,11 +109,29 @@ fun CrosseScreen(
         modifier = Modifier.padding(SpaceLarge)
       )
 
+      if (state.product?.description.orEmpty().isNotEmpty()) {
+        Text(
+          text = state.product!!.description,
+          style = MaterialTheme.typography.body2,
+          textAlign = TextAlign.Center,
+          modifier = Modifier.padding(bottom = SpaceNormal)
+        )
+      } else {
+        Text(
+          text = state.description,
+          style = MaterialTheme.typography.body2,
+          //modifier = Modifier.padding(SpaceNormal)
+        )
+      }
+
       DeliveryPeriod(
         deliveryPeriod = state.product?.deliveryPeriod.toString(),
         deliveryPeriodMax = state.product?.deliveryPeriodMax.orEmpty(),
         deadlineReplace = state.product?.deadlineReplace.orEmpty(),
-        supplierColor = state.product?.supplierColor.orEmpty()
+        supplierColor = state.product?.supplierColor.orEmpty(),
+        onClick = {
+          viewModel.onEvent(ProductCrosseEvent.DeliveryProbabilityDialogVisibilityChange(value = true))
+        }
       )
 
       Text(
@@ -149,7 +157,7 @@ fun CrosseScreen(
         Spacer(modifier = Modifier.width(SpaceSmall))
 
         if (preferencesState.isLoggedIn) CartSection(
-          quantity = state.quantity,
+          quantity = min(state.quantity,product!!.availability),
           onAddToCartClick = {
             viewModel.onEvent(ProductCrosseEvent.AddToBasket)
           },
@@ -160,6 +168,60 @@ fun CrosseScreen(
             viewModel.onEvent(ProductCrosseEvent.DecreaseQuantityToAdd)
           }
         )
+      }
+      if (state.showDeliveryDialog) {
+        Dialog(
+          onDismissRequest = { viewModel.onEvent(ProductCrosseEvent.DeliveryProbabilityDialogVisibilityChange(value = false)) }
+        ) {
+          Card() {
+            Column(
+              horizontalAlignment = Alignment.CenterHorizontally,
+              modifier = Modifier
+                .background(color = MaterialTheme.colors.background)
+                .padding(SpaceNormal)
+            ) {
+              Text(
+                text = PresentationText.Resource(R.string.last_updated)
+                  .asString() + " " + product!!.lastUpdateTime
+              )
+
+              Spacer(modifier = Modifier.height(SpaceNormal))
+
+              Box {
+                PieChart(
+                  listOf(
+                    product.deliveryProbability,
+                    100 - product.deliveryProbability
+                  )
+                )
+
+                Text(
+                  text = product.deliveryProbability.toInt().toString() + "%",
+                  modifier = Modifier.align(Alignment.Center)
+                )
+              }
+
+
+              Spacer(modifier = Modifier.height(SpaceNormal))
+
+              Spacer(modifier = Modifier.width(SpaceNormal))
+
+              Text(
+                text = PresentationText.Resource(R.string.delivery_probability).asString(),
+                color = Color.BrandGreen
+              )
+
+              Spacer(modifier = Modifier.width(SpaceNormal))
+
+              Text(
+                text = PresentationText.Resource(R.string.denie_probability).asString(),
+                color = Color.BrandDarkGray
+              )
+
+            }
+          }
+
+        }
       }
     }
   }

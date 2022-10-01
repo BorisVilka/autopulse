@@ -45,6 +45,7 @@ import ru.autopulse05.android.feature.order.presentation.components.*
 import ru.autopulse05.android.feature.order.presentation.util.OrderEvent
 import ru.autopulse05.android.feature.order.presentation.util.OrderShipmentMode
 import ru.autopulse05.android.feature.order.presentation.util.OrderUiEvent
+import ru.autopulse05.android.feature.shipment.domain.model.ShipmentMethod
 import ru.autopulse05.android.feature.store.presentation.util.StoreScreens
 import ru.autopulse05.android.shared.data.ext.toJson
 import ru.autopulse05.android.shared.data.remote.HttpRoutes
@@ -205,10 +206,20 @@ fun OrderScreen(
         modifier = Modifier.padding(top = SpaceNormal),
         text = PresentationText.Resource(R.string.confirm_order),
         onClick = {
+          if(state.shipmentAddress.value.isEmpty() && state.shipmentMode != OrderShipmentMode.Pickup) {
+            Toast.makeText(context,"Введите адресс доставки",Toast.LENGTH_LONG).show()
+            return@BigButton
+          }
+          if(state.paymentMethod.value!!.name.contentEquals("Наличные при получении")) {
+            viewModel.onEvent(OrderEvent.Submit)
+            Toast.makeText(context, "Заказ успешно оформлен!", Toast.LENGTH_LONG).show()
+            return@BigButton
+          }
           var sum = 0;
           for(i in state.positions.indices) sum+= state.positions[i].price.toInt()*state.positions[i].quantity
-          MainActivity.th.start(viewModel.state.user!!.mobile,
-            sum,
+          MainActivity.th.start(
+            sum.toDouble(),
+            "Оплатите заказ онлайн"
           ) { token, type ->
             viewModel.viewModelScope.launch {
               Log.d("TAG", "START" + UUID.randomUUID().toString())
@@ -250,17 +261,25 @@ fun OrderScreen(
                     currency = "RUB"
                   ),
                   payment_token = token,
-                )
+                 )
               )
-              MainActivity.th.confirm(
-                url.confirmation.confirmation_url
-              ) {
-                viewModel.viewModelScope.launch {
-                  val dto = retrofit.create(PayService::class.java).paymentInfo(url.id)
-                  Log.d("TAG", "DTO GET " + dto.id + " " + dto.status)
-                  if (dto.status.equals("succeeded") || dto.status == "succeeded") {
-                    Toast.makeText(context, "SUCCESS", Toast.LENGTH_LONG).show()
-                    viewModel.onEvent(OrderEvent.Submit)
+              if(url!=null) {
+                if(!url.status.contentEquals("pending")) return@launch
+                MainActivity.th.confirm(
+                  url.confirmation.confirmation_url
+                ) {
+                  viewModel.viewModelScope.launch {
+                    viewModel.state = viewModel.state.copy(isLoading = true)
+                    var dto = retrofit.create(PayService::class.java).paymentInfo(url.id)
+                    Log.d("TAG", "DTO GET " + dto.id + " " + dto.status)
+                    while(dto.status.contentEquals("pending")) {
+                      dto = retrofit.create(PayService::class.java).paymentInfo(url.id)
+                    }
+                    if (dto.status.equals("succeeded") || dto.status == "succeeded") {
+                      Toast.makeText(context, "Заказ успешно оформлен!", Toast.LENGTH_LONG).show()
+                      viewModel.onEvent(OrderEvent.Submit)
+                    }
+                    viewModel.state = viewModel.state.copy(isLoading = false)
                   }
                 }
               }

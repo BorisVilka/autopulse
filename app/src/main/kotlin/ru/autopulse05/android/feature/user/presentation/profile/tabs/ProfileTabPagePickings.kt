@@ -15,9 +15,7 @@ fun ProfileTabPagePickings(
   val state = viewModel.state
 
   Column {
-    state.pickings.forEach {
-      PickingItem(picking = it)
-    }
+
   }
 }
 

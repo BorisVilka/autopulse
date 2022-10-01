@@ -10,4 +10,6 @@ sealed class ProductCrosseEvent {
   object IncreaseQuantityToAdd: ProductCrosseEvent()
   object DecreaseQuantityToAdd: ProductCrosseEvent()
   data class OpenCrosseDetails(val value: Crosse) : ProductCrosseEvent()
+  data class DeliveryProbabilityDialogVisibilityChange(val value: Boolean) :
+    ProductCrosseEvent()
 }

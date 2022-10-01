@@ -4,6 +4,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
 import ru.autopulse05.android.feature.user.data.remote.dto.AddUserDto
+import ru.autopulse05.android.feature.user.data.remote.dto.PaymentDto
 import ru.autopulse05.android.feature.user.data.remote.dto.UserDto
 import ru.autopulse05.android.feature.user.data.remote.dto.UserRestoreDto
 
@@ -55,4 +56,13 @@ interface UserRemoteService {
     @Query("passwordNew") newPassword: String? = null,
     @Query("code") code: String? = null
   ): UserRestoreDto
+
+  @GET(UserHttpRoutes.Payments)
+  suspend fun getPayments(
+    @Query("userlogin") login: String,
+    @Query("userpsw") passwordHash: String,
+    @Query("userId") id: String,
+    @Query("createDateTimeStart") start: String,
+    @Query("createDateTimeEnd") end: String
+  ): List<PaymentDto>
 }

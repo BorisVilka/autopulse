@@ -13,13 +13,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.order.domain.model.Order
+import ru.autopulse05.android.shared.presentation.components.BigButton
 import ru.autopulse05.android.shared.presentation.util.PresentationText
 
 @Composable
 fun OrderItem(
   item: Order,
   modifier: Modifier = Modifier,
-  onClick: (Order) -> Unit = {}
+  onClick: (Order) -> Unit = {},
+  payClick: (Order) -> Unit = {}
 ) {
   Column(
     modifier = modifier
@@ -37,5 +39,12 @@ fun OrderItem(
     Text(
       text = PresentationText.Dynamic("Дата: ${item.date}").asString()
     )
+
+    if(item.statusId.contentEquals("102425")) {
+
+      Spacer(modifier = Modifier.height(SpaceNormal))
+
+      BigButton(onClick = {payClick(item)}, text = PresentationText.Dynamic("Оплатить"))
+    }
   }
 }

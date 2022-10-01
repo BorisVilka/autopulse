@@ -5,5 +5,6 @@ data class LaximoApplicationDto(
     val model: String?,
     val description: String?,
     val options: String?,
-    val brand: String?
+    val brand: String?,
+    val period: String?
 )

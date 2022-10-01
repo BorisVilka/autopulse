@@ -31,6 +31,8 @@ import ru.autopulse05.android.feature.user.presentation.profile.util.ProfileStat
 import ru.autopulse05.android.feature.user.presentation.profile.util.ProfileTabs
 import ru.autopulse05.android.feature.user.presentation.profile.util.ProfileUiEvent
 import ru.autopulse05.android.shared.domain.util.Data
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,7 +48,7 @@ class ProfileViewModel @Inject constructor(
   companion object {
     private val TAG = this::class.java.name
   }
-
+  private var getPaymentJob: Job? = null
   private var getUserJob: Job? = null
   private var getGarageJob: Job? = null
   private var tabDataJob: Job? = null
@@ -228,7 +230,41 @@ class ProfileViewModel @Inject constructor(
       }
       .launchIn(viewModelScope)
   }
+  private fun getPayments() {
+    getUserJob?.cancel()
+    var date = LocalDateTime.now()
+    var now = date.minusYears(1)
+    now = now.plusDays(2)
+    val format = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+    Log.d("TAG",date.format(format)+" TIME")
+    getUserJob = userRepository
+      .get()
+      .onEach { entity ->
+        val user = entity ?: return@onEach
+        getPaymentJob?.cancel()
+        getPaymentJob = userUseCases
+          .getPayments(
+            login = preferencesState.adminLogin,
+            password = preferencesState.adminPasswordHash,
+            id = user.id,
+            start = now.format(format),
+            end = date.format(format)
+          ).onEach { data ->
+            state = when (data) {
+              is Data.Success -> state.copy(payments = data.value, isLoading = false)
+              is Data.Error -> {
+                Log.e(TAG, "Error during updating user: ${data.message}")
 
+                _uiEventChannel.send(ProfileUiEvent.Toast(text = stringResource(R.string.error)))
+
+                state.copy(isLoading = false, isNotFound = true)
+              }
+              is Data.Loading -> state.copy(isLoading = true, isNotFound = false)
+            }
+          }.launchIn(viewModelScope)
+      }
+      .launchIn(viewModelScope)
+  }
 
   private fun onAddCar() {
     viewModelScope.launch {
@@ -249,6 +285,10 @@ class ProfileViewModel @Inject constructor(
         updateUser()
         getUser()
       }
+      ProfileTabs.Payments -> {
+          getPayments()
+      }
+
     }
 
     viewModelScope.launch {

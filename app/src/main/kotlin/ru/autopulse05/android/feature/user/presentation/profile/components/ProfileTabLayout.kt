@@ -27,7 +27,7 @@ fun ProfileTabLayout(
 
       ProfileTab(
         modifier = Modifier.weight(0.33f),
-        tab = ProfileTabs.Payments ,
+        tab = ProfileTabs.Payments,
         profileTabState = profileTabState,
         onCLick = onClick
       )

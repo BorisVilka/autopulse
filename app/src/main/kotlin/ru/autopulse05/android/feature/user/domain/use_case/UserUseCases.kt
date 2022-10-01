@@ -15,5 +15,6 @@ data class UserUseCases(
   val validateRepeatedPassword: UserValidateRepeatedPasswordUseCase,
   val validateCity: UserValidateCityUseCase,
   val validateSurname: UserValidateSurnameUseCase,
-  val validateSecondName: UserValidateSecondNameUseCase
+  val validateSecondName: UserValidateSecondNameUseCase,
+  val getPayments: UserGetPaymentsUseCase
 )

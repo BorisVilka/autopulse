@@ -109,6 +109,7 @@ class UserPopupViewModel @Inject constructor(
   }
 
   private fun onItemClick(value: UserPopupLinks) {
+    onClose()
     viewModelScope.launch {
       _uiEventChannel.send(UserPopupUiEvent.ItemClick(value = value))
     }

@@ -10,6 +10,8 @@ sealed class ProductListEvent {
   data class AddToBasket(val value: Product): ProductListEvent()
   data class IncreaseQuantityToAdd(val value: Product): ProductListEvent()
   data class DecreaseQuantityToAdd(val value: Product) : ProductListEvent()
+  data class OpenApplication(val value: Product): ProductListEvent()
+  data class OpenInfoDialog(val value: Boolean, val product: Product): ProductListEvent()
     data class DeliveryProbabilityDialogVisibilityChange(val value: Boolean, val product: Product) :
         ProductListEvent()
 

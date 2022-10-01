@@ -4,10 +4,7 @@ import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,20 +26,25 @@ import ru.autopulse05.android.feature.product.presentation.components.CartSectio
 import ru.autopulse05.android.shared.presentation.components.BigButton
 import ru.autopulse05.android.shared.presentation.components.BrandNumberSection
 import ru.autopulse05.android.shared.presentation.util.PresentationText
+import kotlin.math.min
 
 @Composable
 fun DetailItem(
   onOpenProductCardClick: () -> Unit,
+  onOpenProductDetails: () -> Unit,
   onAddToCartClick: () -> Unit,
   onIncreaseProductCountClick: () -> Unit,
   onDecreaseProductCountClick: () -> Unit,
   onDeliveryDialogDismiss: () -> Unit,
+  onOpenInfoDialog: () -> Unit,
+  onDismissInfoDialog: () -> Unit,
   onDeliveryProbabilityButtonClick: () -> Unit,
   onShowBasketClick: () -> Unit,
   onDismissBasketDialog: () -> Unit,
   goToBasket: () -> Unit,
   isShowing: Boolean,
   showBasket: Boolean,
+  showInfo: Boolean,
   isShowingBasket: Boolean,
   quantity: Int,
   product: Product
@@ -65,7 +67,7 @@ fun DetailItem(
     ) {
       Row(
         modifier = Modifier
-          .clickable { onOpenProductCardClick() }
+          .clickable { onOpenProductDetails() }
           .background(color = MaterialTheme.colors.surface)
       ) {
         Text(
@@ -86,7 +88,7 @@ fun DetailItem(
 
       IconButton(
         onClick = {
-          onOpenProductCardClick()
+          onOpenInfoDialog()
         }
       ) {
         Icon(
@@ -221,51 +223,54 @@ fun DetailItem(
       Dialog(
         onDismissRequest = { onDeliveryDialogDismiss() }
       ) {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
-            .padding(SpaceNormal)
-        ) {
-          Text(
-            text = PresentationText.Resource(R.string.last_updated)
-              .asString() + " " + product.lastUpdateTime
-          )
-
-          Spacer(modifier = Modifier.height(SpaceNormal))
-
-          Box {
-            PieChart(
-              listOf(
-                product.deliveryProbability,
-                100 - product.deliveryProbability
-              )
+        Card() {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+              .background(color = MaterialTheme.colors.background)
+              .padding(SpaceNormal)
+          ) {
+            Text(
+              text = PresentationText.Resource(R.string.last_updated)
+                .asString() + " " + product.lastUpdateTime
             )
+
+            Spacer(modifier = Modifier.height(SpaceNormal))
+
+            Box {
+              PieChart(
+                listOf(
+                  product.deliveryProbability,
+                  100 - product.deliveryProbability
+                )
+              )
+
+              Text(
+                text = product.deliveryProbability.toInt().toString() + "%",
+                modifier = Modifier.align(Alignment.Center)
+              )
+            }
+
+
+            Spacer(modifier = Modifier.height(SpaceNormal))
+
+            Spacer(modifier = Modifier.width(SpaceNormal))
 
             Text(
-              text = product.deliveryProbability.toInt().toString() + "%",
-              modifier = Modifier.align(Alignment.Center)
+              text = PresentationText.Resource(R.string.delivery_probability).asString(),
+              color = Color.BrandGreen
             )
+
+            Spacer(modifier = Modifier.width(SpaceNormal))
+
+            Text(
+              text = PresentationText.Resource(R.string.denie_probability).asString(),
+              color = Color.BrandDarkGray
+            )
+
           }
-
-
-          Spacer(modifier = Modifier.height(SpaceNormal))
-
-          Spacer(modifier = Modifier.width(SpaceNormal))
-
-          Text(
-            text = PresentationText.Resource(R.string.delivery_probability).asString(),
-            color = Color.BrandGreen
-          )
-
-          Spacer(modifier = Modifier.width(SpaceNormal))
-
-          Text(
-            text = PresentationText.Resource(R.string.denie_probability).asString(),
-            color = Color.BrandDarkGray
-          )
-
         }
+
       }
     }
 
@@ -275,69 +280,72 @@ fun DetailItem(
       Dialog(
         onDismissRequest = { onDismissBasketDialog() }
       ) {
-        Column(
-          horizontalAlignment = Alignment.CenterHorizontally,
-          modifier = Modifier
-            .background(color = MaterialTheme.colors.background)
-            .padding(SpaceNormal)
-        ) {
-
-          BrandNumberSection(brand = product.brand, number = product.number)
-
-          Spacer(modifier = Modifier.height(SpaceNormal))
-
-          Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier.fillMaxWidth()
+        Card() {
+          Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+              .background(color = MaterialTheme.colors.background)
+              .padding(SpaceNormal)
           ) {
-            Column {
-              Text(
-                text = "${product.price} ₽",
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp
-              )
-              Text(
-                text = buildString {
-                  append("${PresentationText.Resource(R.string.availability).asString()} ")
-                  append(
-                    when (product.availability) {
-                      -1 -> "+"
-                      -2 -> "++"
-                      -3 -> "+++"
-                      -10 -> PresentationText.Resource(R.string.not_available).asString()
-                      else -> "${product.availability} " + PresentationText.Resource(R.string.pieces)
-                        .asString()
-                    }
-                  )
+
+            BrandNumberSection(brand = product.brand, number = product.number)
+
+            Spacer(modifier = Modifier.height(SpaceNormal))
+
+            Row(
+              verticalAlignment = Alignment.CenterVertically,
+              horizontalArrangement = Arrangement.SpaceBetween,
+              modifier = Modifier.fillMaxWidth()
+            ) {
+              Column {
+                Text(
+                  text = "${product.price} ₽",
+                  fontWeight = FontWeight.Bold,
+                  fontSize = 18.sp
+                )
+                Text(
+                  text = buildString {
+                    append("${PresentationText.Resource(R.string.availability).asString()} ")
+                    append(
+                      when (product.availability) {
+                        -1 -> "+"
+                        -2 -> "++"
+                        -3 -> "+++"
+                        -10 -> PresentationText.Resource(R.string.not_available).asString()
+                        else -> "${product.availability} " + PresentationText.Resource(R.string.pieces)
+                          .asString()
+                      }
+                    )
+                  },
+                  fontSize = 14.sp
+                )
+              }
+
+              if (showBasket) CartSection(
+                quantity = min(quantity,product.availability),
+                onAddToCartClick = {
+                  onAddToCartClick()
+                  //onDismissBasketDialog()
                 },
-                fontSize = 14.sp
+                onIncreaseProductCountClick = {
+                  onIncreaseProductCountClick()
+                },
+                onDecreaseProductCountClick = {
+                  onDecreaseProductCountClick()
+                }
               )
             }
 
-            if (showBasket) CartSection(
-              quantity = quantity,
-              onAddToCartClick = {
+            Spacer(modifier = Modifier.height(SpaceNormal))
+
+            BigButton(
+              onClick = {
                 onAddToCartClick()
-                onDismissBasketDialog()
+                goToBasket()
               },
-              onIncreaseProductCountClick = {
-                onIncreaseProductCountClick()
-              },
-              onDecreaseProductCountClick = {
-                onDecreaseProductCountClick()
-              }
+              text = PresentationText.Dynamic("Перейти в корзину")
             )
           }
-
-          Spacer(modifier = Modifier.height(SpaceSmall))
-
-          BigButton(
-            onClick = {
-              goToBasket()
-            },
-            text = PresentationText.Dynamic("Перейти в корзину")
-          )
         }
       }
     }
@@ -379,13 +387,34 @@ fun DetailItem(
           modifier = Modifier.size(SpaceLarge)
         ) {
           Icon(
-            painter = painterResource(id = R.drawable.ic_cart_outlined),
+            painter = painterResource(id = R.mipmap.basket_foreground),
             contentDescription = stringResource(id = R.string.add_to_cart),
             tint = Color.BrandYellow
           )
         }
 
         Spacer(modifier = Modifier.width(SpaceSmall))
+      }
+
+      if(showInfo) {
+        Dialog(onDismissRequest = { onDismissInfoDialog() }) {
+            Card() {
+              Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                  .background(color = MaterialTheme.colors.background)
+                  .padding(SpaceNormal)
+              ) {
+                BigButton(onClick = {
+                  onOpenProductCardClick()
+                }, text = PresentationText.Dynamic("Применимость"))
+                Spacer(modifier = Modifier.height(SpaceNormal))
+                BigButton(onClick = {
+                  onOpenProductDetails()
+                }, text = PresentationText.Dynamic("Информация"))
+              }
+            }
+        }
       }
     }
   }
@@ -435,7 +464,11 @@ fun DetailItemPreview() {
     isShowingBasket = false,
     onShowBasketClick = {},
     onDismissBasketDialog = {},
-    goToBasket = {}
+    goToBasket = {},
+    onOpenProductDetails = {},
+    showInfo = false,
+    onOpenInfoDialog = {},
+    onDismissInfoDialog = {}
   )
 }
 
@@ -483,6 +516,10 @@ fun DetailItemHiddenPreview() {
     showBasket = true,
     isShowingBasket = false,
     onDismissBasketDialog = {},
-    goToBasket = {}
-  )
+    goToBasket = {},
+    onOpenProductDetails = {},
+    showInfo = false,
+    onOpenInfoDialog = {},
+    onDismissInfoDialog = {}
+    )
 }

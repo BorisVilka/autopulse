@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
@@ -18,10 +19,7 @@ import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.drawer.Drawer
 import ru.autopulse05.android.core.presentation.navbar.NavBar
 import ru.autopulse05.android.core.presentation.topbar.TopBar
-import ru.autopulse05.android.core.presentation.ui.theme.Autopulse05Theme
-import ru.autopulse05.android.core.presentation.ui.theme.BrandDarkGray
-import ru.autopulse05.android.core.presentation.ui.theme.BrandLightGray
-import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
+import ru.autopulse05.android.core.presentation.ui.theme.*
 import ru.autopulse05.android.core.presentation.util.CoreScreens
 import ru.autopulse05.android.feature.product.presentation.util.ProductScreens
 import ru.autopulse05.android.feature.search.presentation.components.SearchBar
@@ -58,22 +56,16 @@ fun AutopulseApp(
             scaffoldState = scaffoldState,
             popupState = popupState
           ) {
-            Row(
-              verticalAlignment = Alignment.CenterVertically,
-              modifier = Modifier
-                .background(color = MaterialTheme.colors.secondary)
-                .padding(SpaceNormal)
-            ) {
-              SearchBar(
-                value = "",
-                onValueChange = { },
-                hint = stringResource(id = R.string.detail_number),
-                enabled = false,
-                modifier = Modifier.clickable {
-                  navController.navigate(SearchScreens.Main.withArgs("?number="))
-                }
-              )
-            }
+            SearchBar(
+              value = "",
+              onValueChange = { },
+              hint = stringResource(id = R.string.detail_number),
+              enabled = false,
+              modifier = Modifier.clickable {
+                navController.navigate(SearchScreens.Main.withArgs("?number="))
+              },
+              mod = Modifier.fillMaxSize().padding(SpaceSmall)
+            )
           }
         },
         bottomBar = {
