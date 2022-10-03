@@ -69,7 +69,12 @@ class CartViewModel @Inject constructor(
       )
       .onEach { data ->
         state = when (data) {
-          is Data.Success -> state.copy(isLoading = false)
+          is Data.Success -> {
+            state.copy(isLoading = false,
+              items = data.value,
+              selected = persistentListOf<CartItem>().addAll(data.value)
+            )
+          }
           is Data.Error -> {
             Log.e(TAG, "Error during basket update: ${data.message}")
 
@@ -99,7 +104,7 @@ class CartViewModel @Inject constructor(
         )
         .onEach { data ->
           state = when (data) {
-            is Data.Success -> state.copy(isLoading = false)
+            is Data.Success -> state.copy(isLoading = false, items = listOf(), selected = persistentListOf())
             is Data.Error -> {
               Log.e(TAG, "Error during basket clear: ${data.message}")
 
@@ -120,7 +125,7 @@ class CartViewModel @Inject constructor(
         )
         .onEach { data ->
           state = when (data) {
-            is Data.Success -> state.copy(isLoading = false)
+            is Data.Success -> state.copy(isLoading = false, items = data.value, selected = persistentListOf<CartItem>().addAll(data.value))
             is Data.Error -> {
               Log.e(TAG, "Error during basket clear: ${data.message}")
 
@@ -140,7 +145,6 @@ class CartViewModel @Inject constructor(
 
     if (preferences.isLoggedIn) {
       updateBasket()
-      getBasketItems()
     } else viewModelScope.launch {
       _uiEventChannel.send(CartUiEvent.NotLoggedIn)
     }

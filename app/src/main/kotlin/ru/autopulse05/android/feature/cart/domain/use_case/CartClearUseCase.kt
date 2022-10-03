@@ -20,7 +20,7 @@ class CartClearUseCase(
     login: String,
     passwordHash: String,
     items: List<CartItem>
-  ): Flow<Data<Unit>> = flow {
+  ): Flow<Data<List<CartItem>>> = flow {
     try {
       emit(Data.Loading())
 
@@ -50,7 +50,7 @@ class CartClearUseCase(
         repository.deleteAll()
         repository.addAll(entities = basketItems)
 
-        emit(Data.Success(value = Unit))
+        emit(Data.Success(value = basketItems))
       } else {
         emit(Data.Error())
       }

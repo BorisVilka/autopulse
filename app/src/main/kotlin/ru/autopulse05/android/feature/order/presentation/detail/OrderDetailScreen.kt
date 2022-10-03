@@ -221,7 +221,7 @@ fun OrderDetailScreen(
                     onClick =
                     {
                         MainActivity.th.start(
-                            order.sum!!.replace(',','.').toDouble(),
+                            order.sum!!.replace(',','.').replace(" ","").toDouble(),
                             "Оплата заказа № ${order.number}"
                         ) { token, type ->
                             viewModel.viewModelScope.launch {

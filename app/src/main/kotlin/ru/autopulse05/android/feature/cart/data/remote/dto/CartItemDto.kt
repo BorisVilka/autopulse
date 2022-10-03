@@ -25,7 +25,7 @@ data class CartItemDto(
 )
 
 fun CartItemDto.toCartItem() = CartItem(
-  id = "${brand}-${number}",
+  id = "${brand}-${number}-${itemKey}",
   brand = brand,
   number = number,
   numberFix = numberFix,

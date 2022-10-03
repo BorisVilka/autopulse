@@ -1,6 +1,8 @@
 package ru.autopulse05.android.feature.cart.domain.use_case
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import ru.autopulse05.android.feature.cart.data.remote.CartRemoteService
 import ru.autopulse05.android.feature.cart.data.remote.dto.toCartItem
@@ -47,7 +49,7 @@ class CartAddUseCase(
 
         repository.deleteAll()
         repository.addAll(entities = basketItems)
-
+        Log.d("TAG",basketItems.size.toString()+" "+repository.count().first())
         emit(Data.Success(value = Unit))
       } else {
         emit(Data.Error())

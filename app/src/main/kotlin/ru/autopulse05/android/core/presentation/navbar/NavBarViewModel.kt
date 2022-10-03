@@ -44,7 +44,9 @@ class NavBarViewModel @Inject constructor(
 
     getBasketItemsCountJob = cartRepository
       .count()
-      .onEach { state = state.copy(basketItemsCount = it) }
+      .onEach {
+        state = state.copy(basketItemsCount = it)
+      }
       .launchIn(viewModelScope)
   }
 

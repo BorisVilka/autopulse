@@ -389,7 +389,8 @@ fun DetailItem(
           Icon(
             painter = painterResource(id = R.mipmap.basket_foreground),
             contentDescription = stringResource(id = R.string.add_to_cart),
-            tint = Color.BrandYellow
+            tint = Color.BrandYellow,
+            modifier = Modifier.width(25.dp).height(25.dp)
           )
         }
 

@@ -208,6 +208,7 @@ class ProductListViewModel @Inject constructor(
         ).collect { data ->
           when (data) {
             is Data.Success -> state = state.copy(
+
             )
             is Data.Loading -> {}
             is Data.Error -> {
