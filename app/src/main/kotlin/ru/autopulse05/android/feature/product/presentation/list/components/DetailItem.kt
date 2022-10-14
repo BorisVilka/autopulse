@@ -325,7 +325,7 @@ fun DetailItem(
                 quantity = min(quantity,product.availability),
                 onAddToCartClick = {
                   onAddToCartClick()
-                  //onDismissBasketDialog()
+                  onDismissBasketDialog()
                 },
                 onIncreaseProductCountClick = {
                   onIncreaseProductCountClick()

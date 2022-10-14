@@ -37,6 +37,7 @@ class LaximoGetUnitsUseCase(
 
       emit(Data.Success(value = units))
     } catch (e: Exception) {
+      e.printStackTrace()
       emit(Data.Error(message = e.message))
     }
   }

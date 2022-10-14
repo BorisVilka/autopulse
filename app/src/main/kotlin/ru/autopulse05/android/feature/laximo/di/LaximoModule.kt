@@ -36,6 +36,14 @@ object LaximoModule {
 
   @Singleton
   @Provides
+  fun provideLaximoGetQuickGroupUseCase(
+    remoteService: LaximoRemoteService
+  ): LaximoGetQuickGroupUseCase = LaximoGetQuickGroupUseCase(
+    remoteService = remoteService
+  )
+
+  @Singleton
+  @Provides
   fun provideLaximoGetVehiclesByVinUseCase(
     remoteService: LaximoRemoteService
   ): LaximoGetVehiclesByVinUseCase = LaximoGetVehiclesByVinUseCase(
@@ -63,6 +71,14 @@ object LaximoModule {
   fun provideLaximoGetUnitsUseCase(
     remoteService: LaximoRemoteService
   ): LaximoGetUnitsUseCase = LaximoGetUnitsUseCase(
+    remoteService = remoteService
+  )
+
+  @Singleton
+  @Provides
+  fun provideLaximoGetQuickDetailUseCase(
+    remoteService: LaximoRemoteService
+  ): LaximoGetQuickDetailUseCase = LaximoGetQuickDetailUseCase(
     remoteService = remoteService
   )
 
@@ -118,7 +134,9 @@ object LaximoModule {
     getVehicleFormFields: LaximoGetVehicleFormFieldsUseCase,
     getDetails: LaximoGetDetailsUseCase,
     getImagesUseCase: LaximoGetImagesUseCase,
-    getApplicationUseCase: LaximoGetApplicationUseCase
+    getApplicationUseCase: LaximoGetApplicationUseCase,
+    getQuickGroupUseCase: LaximoGetQuickGroupUseCase,
+    getQuickDetailUseCase: LaximoGetQuickDetailUseCase
   ) = LaximoUseCases(
     getCatalogs = getCatalogs,
     getVehicles = getVehicles,
@@ -130,6 +148,8 @@ object LaximoModule {
     getVehicleFormFields = getVehicleFormFields,
     getDetails = getDetails,
     getImages = getImagesUseCase,
-    getApplication = getApplicationUseCase
+    getApplication = getApplicationUseCase,
+    getQuickGroupUseCase = getQuickGroupUseCase,
+    getQuickDetailUseCase = getQuickDetailUseCase
   )
 }

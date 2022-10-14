@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.mutate
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import ru.autopulse05.android.R
+import ru.autopulse05.android.feature.laximo.data.remote.dto.LaximoQuickGroupDto
 import ru.autopulse05.android.feature.laximo.domain.model.LaximoCategory
 import ru.autopulse05.android.feature.laximo.domain.use_case.LaximoUseCases
 import ru.autopulse05.android.feature.laximo.presentation.categories.util.LaximoCategoriesEvent
@@ -36,6 +38,8 @@ class LaximoCategoriesViewModel @Inject constructor(
   }
 
   private var getCategoriesJob: Job? = null
+  private var getQuickGroupJob: Job? = null
+  private var getQuickDetailJob: Job? = null
   private val _uiEventChannel = Channel<LaximoCategoriesUiEvent>()
 
   var state by mutableStateOf(LaximoCategoriesState())
@@ -104,6 +108,62 @@ class LaximoCategoriesViewModel @Inject constructor(
       .launchIn(viewModelScope)
   }
 
+  private fun getQuickGroup() {
+    getQuickGroupJob?.cancel()
+    getQuickGroupJob = laximoUseCases
+      .getQuickGroupUseCase(
+        login = preferencesState.laximoLogin,
+        password = preferencesState.laximoPassword,
+        locale = preferencesState.locale,
+        catalog = state.catalog,
+        vehicleId = state.vehicleId,
+        ssd = state.ssd
+      )
+      .onEach { it ->
+        when(it) {
+          is Data.Success -> {
+            for(i in it.value) put(i)
+            state = state.copy(
+              quickGroup = it.value,
+            )
+            Log.d("TAG","YYY "+state.vis.size+" TTT")
+          }
+
+        }
+      }
+      .launchIn(viewModelScope)
+  }
+
+  private fun put(list: LaximoQuickGroupDto) {
+    state = state.copy(
+      vis = state.vis.put(list.quickgroupid,false)
+    )
+    for(i in list.childs) put(i)
+  }
+
+  private fun getQuickDetail(id: String) {
+    getQuickDetailJob?.cancel()
+    getQuickDetailJob = laximoUseCases
+      .getQuickDetailUseCase(
+        login = preferencesState.laximoLogin,
+        password = preferencesState.laximoPassword,
+        locale = preferencesState.locale,
+        catalog = state.catalog,
+        vehicleId = state.vehicleId,
+        ssd = state.ssd,
+        quickGroupId = id
+      )
+      .onEach {
+        when(it) {
+          is Data.Success -> {
+            //state.quickGroup.addAll(it.value.toList())
+            //state = state.copy()
+          }
+        }
+      }
+      .launchIn(viewModelScope)
+  }
+
   private fun onInitialValuesChange(
     catalog: String,
     vehicleId: String,
@@ -114,7 +174,7 @@ class LaximoCategoriesViewModel @Inject constructor(
       vehicleId = vehicleId,
       ssd = ssd
     )
-
+    getQuickGroup()
     getCategories()
   }
 

@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.MaterialTheme
@@ -71,8 +73,7 @@ fun LaximoUnitsScreen(
     Column(
       modifier = Modifier
         .padding(SpaceNormal)
-        .verticalScroll(scrollState)
-    ) {
+      ) {
       Text(
         text = PresentationText.Dynamic("Узлы").asString(),
         style = MaterialTheme.typography.h1
@@ -80,15 +81,17 @@ fun LaximoUnitsScreen(
 
       Spacer(modifier = Modifier.height(SpaceSmall))
 
-      state.units.forEach { unit ->
-        UnitItem(
-          unit = unit,
-          onClick = {
-            viewModel.onEvent(LaximoUnitsEvent.OnUnitClicked(value = unit))
-          }
-        )
+      LazyColumn() {
+        items(state.units) { unit ->
+          UnitItem(
+            unit = unit,
+            onClick = {
+              viewModel.onEvent(LaximoUnitsEvent.OnUnitClicked(value = unit))
+            }
+          )
 
-        Spacer(modifier = Modifier.height(SpaceSmall))
+          Spacer(modifier = Modifier.height(SpaceSmall))
+        }
       }
     }
   }

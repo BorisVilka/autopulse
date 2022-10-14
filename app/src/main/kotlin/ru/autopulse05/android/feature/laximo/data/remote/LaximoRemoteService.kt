@@ -96,4 +96,23 @@ interface LaximoRemoteService {
     oem: String,
     localized: Boolean = true
   ): List<LaximoApplicationDto>
+
+  suspend fun getQuickGroup(
+    login: String,
+    password: String,
+    catalog: String,
+    vehicleId: String,
+    ssd: String,
+    locale: String = "ru_RU"
+  ): List<LaximoQuickGroupDto>
+
+  suspend fun getQuickDetail(
+    login: String,
+    password: String,
+    catalog: String,
+    vehicleId: String,
+    ssd: String,
+    quickGroupId: String,
+    locale: String = "ru_RU"
+  ): List<LaximoCategoryDto>
 }

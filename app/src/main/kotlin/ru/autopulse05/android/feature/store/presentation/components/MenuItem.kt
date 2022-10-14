@@ -32,7 +32,7 @@ fun MenuItem(
     Image(
       painter = icon,
       contentDescription = null,
-      modifier = Modifier.size(32.dp)
+      modifier = Modifier.size(48.dp)
     )
 
     Spacer(modifier = Modifier.width(SpaceNormal))

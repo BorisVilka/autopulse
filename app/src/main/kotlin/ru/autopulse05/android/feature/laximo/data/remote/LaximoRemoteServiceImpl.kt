@@ -237,6 +237,36 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       )
     }
 
+    private fun createQuickGroupDto(parser: XmlPullParser): LaximoQuickGroupDto {
+       val id = parser.getAttributeValue(2)
+      val name = parser.getAttributeValue(1)
+      val link = parser.getAttributeValue(0).toBoolean()
+      var list = mutableListOf<LaximoQuickGroupDto>()
+      parser.next()
+      while(parser.eventType!=XmlPullParser.END_DOCUMENT) {
+        when(parser.eventType) {
+          XmlPullParser.START_TAG -> {
+            // Log.d("TAG",parser.name)
+            if(parser.name=="row") {
+              list.add(createQuickGroupDto(parser))
+            }
+          }
+          XmlPullParser.END_TAG -> {
+            if(parser.name=="row") {
+              break;
+            }
+          }
+        }
+        parser.next()
+      }
+      return LaximoQuickGroupDto(
+        quickgroupid = id,
+        name = name,
+        link = link,
+        childs = list
+      )
+    }
+
     private fun createUnitDto(parser: XmlPullParser): LaximoUnitDto {
       val map = createAttributeMap(parser)
 
@@ -394,8 +424,90 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
         add(Pair("ssd", ssd))
       }.toTypedArray()
     )
+    //Log.d("TAG",response.toString()+"|||||||")
     return convertPrimitiveToList(response, ::createCategoryDto)
   }
+
+  override suspend fun getQuickGroup(
+    login: String,
+    password: String,
+    catalog: String,
+    vehicleId: String,
+    ssd: String,
+    locale: String
+  ): List<LaximoQuickGroupDto> {
+    val response = call(
+      login = login,
+      password = password,
+     method = LaximoHttpRoutes.QUICK_GROUP,
+      args = mutableListOf<Pair<String, String>>().apply {
+        add(Pair("Locale", locale))
+        add(Pair("Catalog", catalog))
+        add(Pair("VehicleId", vehicleId))
+        add(Pair("ssd", ssd))
+      }.toTypedArray()
+    )
+    Log.d("TAG",response.toString()+"|||||||")
+    return convertPrimitiveToList(response,::createQuickGroupDto)
+  }
+
+  override suspend fun getQuickDetail(
+    login: String,
+    password: String,
+    catalog: String,
+    vehicleId: String,
+    ssd: String,
+    quickGroupId: String,
+    locale: String
+  ): List<LaximoCategoryDto> {
+    val response = call(
+      login = login,
+      password = password,
+      method = LaximoHttpRoutes.QUICK_DETAIL,
+      args = mutableListOf<Pair<String, String>>().apply {
+        add(Pair("Locale", locale))
+        add(Pair("Catalog", catalog))
+        add(Pair("VehicleId", vehicleId))
+        add(Pair("QuickGroupId",quickGroupId))
+        add(Pair("ssd", ssd))
+      }.toTypedArray()
+    )
+    Log.d("TAG",response.toString()+"|||||||")
+    //return listOf()
+    return mutableListOf<LaximoCategoryDto>().apply {
+
+      val factory = XmlPullParserFactory.newInstance().apply {
+        isNamespaceAware = true
+      }
+
+      val parser = factory.newPullParser().apply {
+        setInput(StringReader(response.value.toString()))
+      }
+
+      GlobalScope.launch(Dispatchers.IO) {
+        while (parser.eventType != XmlPullParser.END_DOCUMENT) {
+          when (parser.eventType) {
+            XmlPullParser.START_TAG -> if (parser.name == "Category") add(createCategoryDto(parser))
+          }
+          parser.next()
+        }
+      }.join()
+    }
+  }
+
+  private fun createUnitDto1(parser: XmlPullParser): LaximoUnitDto {
+    parser.next()
+    val map = createAttributeMap(parser)
+
+    return LaximoUnitDto(
+      unitId = map["unitid"] as String,
+      name = map["name"] as String,
+      imageUrl = map["imageurl"] as String,
+      code = map["code"] as String,
+      ssd = map["ssd"] as String
+    )
+  }
+
 
   override suspend fun getUnits(
     login: String,
@@ -417,6 +529,7 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       Pair("ssd", ssd),
       Pair("Localized", "true")
     )
+    Log.d("TAG",response.toString()+"||||")
     return convertPrimitiveToList(response, ::createUnitDto)
   }
 
@@ -438,6 +551,7 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       Pair("ssd", ssd),
       Pair("Localized", "true")
     )
+    Log.d("TAG",response.toString()+"!!!!")
     return convertPrimitive(response, ::createUnitDto)
   }
 

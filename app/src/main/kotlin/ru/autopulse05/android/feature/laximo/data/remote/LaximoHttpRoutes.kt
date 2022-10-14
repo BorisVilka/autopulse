@@ -13,6 +13,8 @@ object LaximoHttpRoutes {
   const val FIND_VEHICLE_BY_FRAME = "FindVehicle"
   const val LIST_CATEGORIES = "ListCategories"
   const val LIST_UNITS = "ListUnits"
+  const val QUICK_GROUP = "ListQuickGroup"
+  const val QUICK_DETAIL = "ListQuickDetail"
   const val GET_UNIT_INFO = "GetUnitInfo"
   const val GET_WIZARD = "GetWizard2"
   const val FIND_VEHICLE_BY_WIZARD = "FindVehicleByWizard2"
