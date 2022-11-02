@@ -16,6 +16,9 @@ data class ProfileState(
   val pickings: List<Picking> = listOf(),
   val refunds: List<Refund> = listOf(),
   val payments: List<PaymentDto> = listOf(),
+  val date: String = "",
+  val dateM: String = "",
+  val filter: String = "",
   val isNotFound: Boolean = false,
   val isLoading: Boolean = true
 )

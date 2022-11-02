@@ -107,7 +107,7 @@ fun VinDetailScreen(
 
         ExpandableCard(
             title = PresentationText.Dynamic("Вы просили подобрать:"),
-            onClick = { value ->
+            onClick = {
                 viewModel.state = viewModel.state.copy(
                     partsVisible = !viewModel.state.partsVisible
                 )
@@ -123,9 +123,9 @@ fun VinDetailScreen(
                     .background(MaterialTheme.colors.secondary)
                     .padding(SpaceSmall)
             ) {
-                details.parts.filter {
+                details.parts?.filter {
                     it.offers==null
-                }.onEach {
+                }.orEmpty().onEach {
                     Text(text = it.query,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -168,7 +168,7 @@ fun VinDetailScreen(
                     .background(MaterialTheme.colors.secondary)
                     .padding(SpaceSmall)
             ) {
-                details.parts.filter {
+                details.parts.orEmpty().filter {
                     it.offers!=null
                 }.onEach {
                     it.offers!!.onEach {

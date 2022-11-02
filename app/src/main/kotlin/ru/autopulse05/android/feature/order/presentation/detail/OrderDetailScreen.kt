@@ -12,6 +12,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,6 +25,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import ru.autopulse05.android.core.presentation.MainActivity
+import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceLarge
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
@@ -140,8 +142,8 @@ fun OrderDetailScreen(
                 },
                 expanded = viewModel.state.isPositionsVisible,
                 shape = MaterialTheme.shapes.small,
-                contentExpandedBackgroundColor = MaterialTheme.colors.surface,
-                contentCollapsedBackgroundColor = MaterialTheme.colors.surface
+                contentExpandedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f),
+                contentCollapsedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f)
             ) {
                 Column(
                     modifier = Modifier

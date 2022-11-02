@@ -58,29 +58,7 @@ class LaximoUnitsViewModel @Inject constructor(
         when (data) {
           is Data.Success -> {
             Log.d("TAG","SUCCESS")
-            var list = mutableListOf<LaximoUnit>()
-            for(i in data.value) {
-              Log.d("TAG",i.name)
-              getUnitsJob?.cancel()
-              getUnitsJob = laximoUseCases
-                .getUnits(
-                login = preferencesState.laximoLogin,
-                password = preferencesState.laximoPassword,
-                locale = preferencesState.locale,
-                catalog = state.catalog,
-                ssd = i.ssd,
-                vehicleId = state.vehicleId,
-                categoryId = i.categoryId.toString()
-              ).onEach {
-                when(it) {
-                  is Data.Success -> {
-                    list.addAll(it.value)
-                    state = state.copy(units = list.toList(), isLoading = false)
-                  }
-                }
-              }.launchIn(viewModelScope)
-            }
-            state = state.copy(units = list.toList(), isLoading = false)
+            state = state.copy(units = data.value.map { it.toLaximoUnit() }.toList(), isLoading = false)
           }
           is Data.Error -> {
             Log.e(TAG, "Error during getting units: ${data.message}")

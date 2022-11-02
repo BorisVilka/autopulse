@@ -15,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -31,6 +32,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.MainActivity
+import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.cart.domain.model.CartItem
@@ -117,8 +119,8 @@ fun OrderScreen(
         },
         expanded = state.isPositionsVisible,
         shape = MaterialTheme.shapes.small,
-        contentExpandedBackgroundColor = MaterialTheme.colors.surface,
-        contentCollapsedBackgroundColor = MaterialTheme.colors.surface
+        contentExpandedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f),
+        contentCollapsedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f)
       ) {
         Column(
           modifier = Modifier

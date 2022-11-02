@@ -61,11 +61,13 @@ fun CrosseScreen(
   LaunchedEffect(key1 = context) {
     viewModel.uiEvents.collect { event ->
       when (event) {
-        is ProductCrosseUiEvent.Toast -> Toast.makeText(
-          context,
-          event.text,
-          Toast.LENGTH_LONG
-        ).show()
+        is ProductCrosseUiEvent.Toast -> {
+          Toast.makeText(
+            context,
+            event.text,
+            Toast.LENGTH_LONG
+          ).show()
+        }
       }
     }
   }

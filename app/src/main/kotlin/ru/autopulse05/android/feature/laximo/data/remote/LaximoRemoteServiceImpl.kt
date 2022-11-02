@@ -459,7 +459,7 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
     ssd: String,
     quickGroupId: String,
     locale: String
-  ): List<LaximoCategoryDto> {
+  ): List<LaximoUnitDto> {
     val response = call(
       login = login,
       password = password,
@@ -474,7 +474,7 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
     )
     Log.d("TAG",response.toString()+"|||||||")
     //return listOf()
-    return mutableListOf<LaximoCategoryDto>().apply {
+    return mutableListOf<LaximoUnitDto>().apply {
 
       val factory = XmlPullParserFactory.newInstance().apply {
         isNamespaceAware = true
@@ -487,7 +487,7 @@ class LaximoRemoteServiceImpl : LaximoRemoteService {
       GlobalScope.launch(Dispatchers.IO) {
         while (parser.eventType != XmlPullParser.END_DOCUMENT) {
           when (parser.eventType) {
-            XmlPullParser.START_TAG -> if (parser.name == "Category") add(createCategoryDto(parser))
+            XmlPullParser.START_TAG -> if (parser.name == "Unit") add(createUnitDto(parser))
           }
           parser.next()
         }

@@ -64,6 +64,10 @@ fun DetailScreen(
   val scrollState = rememberScrollState()
 
   LaunchedEffect(key1 = context) {
+    if(product==null) {
+      navController.popBackStack()
+      Toast.makeText(context,"Товар не найден",Toast.LENGTH_LONG).show()
+    }
     viewModel.onEvent(
       ProductDetailsEvent.InitialValuesChange(
         product = product!!
@@ -82,11 +86,14 @@ fun DetailScreen(
         ) {
           popUpTo(SearchScreens.Main.route)
         }
-        is ProductDetailsUiEvent.Toast -> Toast.makeText(
-          context,
-          event.text,
-          Toast.LENGTH_LONG
-        ).show()
+        is ProductDetailsUiEvent.Toast -> {
+          navController.popBackStack()
+          Toast.makeText(
+            context,
+            event.text,
+            Toast.LENGTH_LONG
+          ).show()
+        }
       }
     }
   }
@@ -94,8 +101,11 @@ fun DetailScreen(
   LoadingScreen(
     isLoading = state.isLoading
   ) {
-    state.info!!
-    state.product!!
+    if(state.info==null || state.product==null) {
+      Toast.makeText(context,"Товар не найден",Toast.LENGTH_LONG).show()
+      return@LoadingScreen
+    }
+
 
     Column(
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -273,7 +283,7 @@ fun DetailScreen(
       properties = DialogProperties()
         ) {
        Column(modifier = Modifier
-          .fillMaxSize()
+         .fillMaxSize()
          .background(MaterialTheme.colors.background)
        ) {
          Text(
@@ -288,7 +298,9 @@ fun DetailScreen(
 
              SecondaryButton(
                text = PresentationText.Dynamic(it),
-               modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+               modifier = Modifier
+                 .weight(0.33f)
+                 .padding(SpaceSmall),
                colors = ButtonDefaults.buttonColors(
                  backgroundColor = if (state.choicedBrand == it) {
                    MaterialTheme.colors.background
@@ -306,7 +318,9 @@ fun DetailScreen(
            items(state.applications[state.choicedBrand].orEmpty().toList()) {
              SecondaryButton(
                text = PresentationText.Dynamic(it.first),
-               modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+               modifier = Modifier
+                 .weight(0.33f)
+                 .padding(SpaceSmall),
                colors = ButtonDefaults.buttonColors(
                  backgroundColor = if (state.choicedModel == it.first) {
                    MaterialTheme.colors.background

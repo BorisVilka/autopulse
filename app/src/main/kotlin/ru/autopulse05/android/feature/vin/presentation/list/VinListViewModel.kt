@@ -8,10 +8,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.receiveAsFlow
+import ru.autopulse05.android.R
 import ru.autopulse05.android.feature.car.domain.use_case.CarUseCases
 import ru.autopulse05.android.feature.preferences.presentation.PreferencesViewModel
+import ru.autopulse05.android.feature.product.presentation.list.util.ProductListUiEvent
 import ru.autopulse05.android.feature.user.domain.repository.UserRepository
 import ru.autopulse05.android.feature.vin.domain.use_case.VinUseCases
 import ru.autopulse05.android.feature.vin.presentation.list.util.VinListState
@@ -30,7 +34,8 @@ class VinListViewModel @Inject constructor(
     var state by mutableStateOf(VinListState())
     var getListJob: Job? = null
     var getUserJob: Job? = null
-
+    private val _uiEventChannel = Channel<ProductListUiEvent>()
+    val uiEvents = _uiEventChannel.receiveAsFlow()
 
     private fun getUser() {
         getUserJob?.cancel()
@@ -64,6 +69,12 @@ class VinListViewModel @Inject constructor(
                         list = data.value
                     )
                     //Log.d("TAG",data.value.size.toString()+" |||| "+state.user!!.id)
+                }
+                is Data.Error -> {
+                    _uiEventChannel.send(ProductListUiEvent.Toast(text = "Ошибка, перезагрузите приложение"))
+                }
+                is Data.Loading -> {
+
                 }
             }
         }.launchIn(viewModelScope)

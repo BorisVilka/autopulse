@@ -49,7 +49,7 @@ fun ChatScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     LaunchedEffect(Unit) {
         while(true) {
-            delay(10.seconds)
+            delay(5.seconds)
             viewModel.updateChat()
         }
     }
@@ -61,8 +61,7 @@ fun ChatScreen(
             .fillMaxWidth().fillMaxHeight()
             .weight(5f)
             .padding(SpaceSmall)) {
-            items(viewModel.state.chat.size) { ind ->
-                val it = viewModel.state.chat[ind]
+            items(viewModel.state.chat.filter { it.comment!=null }) { it ->
                 val gravity = if(user.id.contentEquals(it.userId)) Arrangement.End else Arrangement.Start
                 val color = (if(user.id.contentEquals(it.userId)) Color.Cyan else Color.Gray).copy(alpha = 0.5f)
                 Row(modifier = Modifier
@@ -71,7 +70,7 @@ fun ChatScreen(
                     Card(
                         backgroundColor = color,
                     ) {
-                        Text(text = it.comment,
+                        Text(text = it.comment!!,
                             color = Color.White,
                         modifier = Modifier.padding(SpaceSmall)
                             )

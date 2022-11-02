@@ -114,5 +114,5 @@ interface LaximoRemoteService {
     ssd: String,
     quickGroupId: String,
     locale: String = "ru_RU"
-  ): List<LaximoCategoryDto>
+  ): List<LaximoUnitDto>
 }

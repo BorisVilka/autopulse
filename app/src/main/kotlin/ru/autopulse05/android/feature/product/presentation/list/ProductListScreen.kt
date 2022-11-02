@@ -3,6 +3,8 @@ package ru.autopulse05.android.feature.product.presentation.list
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,10 +27,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ru.autopulse05.android.R
 import ru.autopulse05.android.core.presentation.topbar.TopBar
-import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.cart.presentation.util.CartScreens
+import ru.autopulse05.android.feature.product.domain.model.Product
 import ru.autopulse05.android.feature.product.domain.util.OrderType
 import ru.autopulse05.android.feature.product.presentation.list.components.AvailabilityFilterSection
 import ru.autopulse05.android.feature.product.presentation.list.components.DetailItem
@@ -39,6 +40,7 @@ import ru.autopulse05.android.feature.product.presentation.list.util.ProductList
 import ru.autopulse05.android.feature.product.presentation.util.ProductScreens
 import ru.autopulse05.android.shared.data.ext.toJson
 import ru.autopulse05.android.shared.presentation.LoadingScreen
+import ru.autopulse05.android.shared.presentation.components.CheckboxWithText
 import ru.autopulse05.android.shared.presentation.components.SecondaryButton
 import ru.autopulse05.android.shared.presentation.popup.PopupState
 import ru.autopulse05.android.shared.presentation.popup.rememberPopupState
@@ -79,6 +81,26 @@ fun ProductListScreen(
     viewModel.onEvent(ProductListEvent.InitialValuesChange(brand = brand!!, number = number!!))
   }
 
+  if(state.showBrands) {
+      Dialog(onDismissRequest = {
+                                viewModel.showBrands()
+      }, ) {
+          Card(modifier = Modifier.height(300.dp)
+          ) {
+              Column(modifier = Modifier
+                  .background(MaterialTheme.colors.surface)
+                  .verticalScroll(rememberScrollState())
+                  .padding(SpaceNormal)
+              ) {
+                  state.brands.onEach {
+                      CheckboxWithText(text = PresentationText.Dynamic(it), onClick = {
+                          viewModel.changeBrand(it)
+                      }, checked = state.chooised.contains(it))
+                  }
+              }
+          }
+      }
+  }
   Scaffold(
     topBar = {
       TopBar(
@@ -86,38 +108,37 @@ fun ProductListScreen(
         navController = navController,
         popupState = popupState,
         actions = {
-          IconButton(
-            onClick = {
-              viewModel.onEvent(
-                ProductListEvent.PriceFilterVisibilityChange(
-                  value = !state.priceFilterIsShowing
-                )
-              )
-            }
-          ) {
-            Icon(
-              painter = painterResource(id = R.drawable.ic_dollar),
-              contentDescription = PresentationText.Resource(R.string.filter_by_price).asString(),
-              tint = Color.BrandYellow
-            )
+            Spacer(modifier = Modifier.width(SpaceNormal))
+          Row(modifier = Modifier.clickable {
+              if(state.sortObject==null || state.sortObject==1) viewModel.setSort(0)
+              else viewModel.setSort(1)
+          }) {
+              Text(text = "Цена")
+              Icon(painter =  if(state.sortObject==null || state.sortObject!=0) painterResource(id = R.drawable.ic_baseline_arrow_drop_down_24)
+                else painterResource(id = R.drawable.ic_baseline_arrow_drop_up_24),
+                  contentDescription = "")
           }
-          IconButton(
-            onClick = {
-              viewModel.onEvent(
-                ProductListEvent.AvailabilityFilterVisibilityChange(
-                  value = !state.priceFilterIsShowing
-                )
-              )
+            Spacer(modifier = Modifier.width(SpaceSmall))
+           Row(modifier = Modifier.clickable {
+               if(state.sortObject==null || state.sortObject==3) viewModel.setSort(2)
+               else viewModel.setSort(3)
+            }) {
+                Text(text = "Срок")
+                Icon(painter =
+                    if(state.sortObject==null || state.sortObject!=2) painterResource(id = R.drawable.ic_baseline_arrow_drop_down_24)
+                    else painterResource(id = R.drawable.ic_baseline_arrow_drop_up_24),
+                    contentDescription = "")
             }
-          ) {
-            Icon(
-              painter = painterResource(id = R.drawable.ic_box),
-              contentDescription = PresentationText.Resource(
-                R.string.filter_by_availability
-              ).asString(),
-              tint = Color.BrandYellow
-            )
-          }
+            Spacer(modifier = Modifier.width(SpaceSmall))
+            Row(modifier = Modifier.clickable {
+                viewModel.showBrands()
+            }) {
+                Text(text = "Бренды")
+                Icon(painter =
+                if(!state.showBrands) painterResource(id = R.drawable.ic_baseline_arrow_drop_down_24)
+                else painterResource(id = R.drawable.ic_baseline_arrow_drop_up_24),
+                    contentDescription = "")
+            }
         }
       )
     }
@@ -155,7 +176,20 @@ fun ProductListScreen(
           )
 
           LazyColumn {
-              items(state.products.toList().orEmpty()) { product ->
+              var list = state.products
+                  .toList()
+                  .filter {
+                      state.chooised.contains(it.first.brand) || state.chooised.isEmpty()
+                  }
+              if(state.sortObject!=null) {
+                  if(state.sortObject==0) list = list.sortedBy { it.first.price }
+                  else if(state.sortObject==1) list = list.sortedBy { -it.first.price }
+                  else if(state.sortObject==2) list = list.sortedBy { it.first.deliveryPeriod }
+                  else list = list.sortedBy { -it.first.deliveryPeriod }
+              }
+              items(
+                  list
+                  .orEmpty()) { product ->
                   DetailItem(
                       onAddToCartClick = {
                           viewModel.onEvent(ProductListEvent.AddToBasket(value = product.first))
@@ -219,7 +253,10 @@ fun ProductListScreen(
                       goToBasket = {
                           viewModel.goToBasket()
                       },
-                      onOpenProductDetails = { viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product.first)) }
+                      onOpenProductDetails = {
+                          if(product.first==null) {
+                              Toast.makeText(context,"Товар не найден",Toast.LENGTH_LONG).show()
+                          }else viewModel.onEvent(ProductListEvent.OpenProductDetails(value = product.first)) }
                   )
               }
           }
@@ -250,7 +287,9 @@ fun ProductListScreen(
 
                           SecondaryButton(
                               text = PresentationText.Dynamic(it),
-                              modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+                              modifier = Modifier
+                                  .weight(0.33f)
+                                  .padding(SpaceSmall),
                               colors = ButtonDefaults.buttonColors(
                                   backgroundColor = if (state.choicedBrand == it) {
                                       MaterialTheme.colors.background
@@ -268,7 +307,9 @@ fun ProductListScreen(
                       items(state.applications[state.choicedBrand].orEmpty().toList()) {
                           SecondaryButton(
                               text = PresentationText.Dynamic(it.first),
-                              modifier = Modifier.weight(0.33f).padding(SpaceSmall),
+                              modifier = Modifier
+                                  .weight(0.33f)
+                                  .padding(SpaceSmall),
                               colors = ButtonDefaults.buttonColors(
                                   backgroundColor = if (state.choicedModel == it.first) {
                                       MaterialTheme.colors.background

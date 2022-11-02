@@ -8,7 +8,7 @@ data class VinDto (
     val _id: Int,
     val state: String,
     val carInfo: CarInfo?,
-    val parts: List<PartDto>,
+    val parts: List<PartDto>?,
     val expertReply: String?,
     val chat: List<ChatDto>?
 )

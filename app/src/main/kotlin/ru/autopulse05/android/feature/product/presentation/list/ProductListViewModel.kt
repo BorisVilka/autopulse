@@ -112,34 +112,51 @@ class ProductListViewModel @Inject constructor(
       )
       .onEach { data ->
         state = when (data) {
-          is Data.Success -> state.copy(
-            isLoading = false,
-            isNotFound = false,
-            products = data.value
-              .sortedWith(compareBy({ it.brand != state.brand },
-                { it.deliveryPeriod },
-                { it.availability }))
-              .associateWith { it.packing }
-              .toPersistentMap(),
-            showBasketDialogs = data.value
-              .sortedWith(compareBy({ it.brand != state.brand },
-                { it.deliveryPeriod },
-                { it.availability }))
-              .associateWith { false }
-              .toPersistentMap(),
-            showDeliveryDialogs = data.value
-               .sortedWith(compareBy({ it.brand != state.brand },
-                { it.deliveryPeriod },
-                { it.availability }))
-              .associateWith { false }
-              .toPersistentMap(),
-            showInfoDialogs = data.value
-              .sortedWith(compareBy({ it.brand != state.brand },
-                { it.deliveryPeriod },
-                { it.availability }))
-              .associateWith { false }
-              .toPersistentMap(),
-          )
+          is Data.Success -> {
+            var list = mutableListOf<String>()
+            for(i in data.value) {
+              if(!list.contains(i.brand)) {
+                list.add(i.brand)
+              }
+            }
+            state.copy(
+              isLoading = false,
+              isNotFound = false,
+              products = data.value
+                .sortedWith(
+                  compareBy({ it.brand != state.brand },
+                    { it.deliveryPeriod },
+                    { it.availability })
+                )
+                .associateWith { min(1, it.availability) }
+                .toPersistentMap(),
+              showBasketDialogs = data.value
+                .sortedWith(
+                  compareBy({ it.brand != state.brand },
+                    { it.deliveryPeriod },
+                    { it.availability })
+                )
+                .associateWith { false }
+                .toPersistentMap(),
+              showDeliveryDialogs = data.value
+                .sortedWith(
+                  compareBy({ it.brand != state.brand },
+                    { it.deliveryPeriod },
+                    { it.availability })
+                )
+                .associateWith { false }
+                .toPersistentMap(),
+              showInfoDialogs = data.value
+                .sortedWith(
+                  compareBy({ it.brand != state.brand },
+                    { it.deliveryPeriod },
+                    { it.availability })
+                )
+                .associateWith { false }
+                .toPersistentMap(),
+              brands = list.toList()
+            )
+          }
           is Data.Error -> {
             if (data.code == 404) {
               state = state.copy(isNotFound = true)
@@ -281,5 +298,34 @@ class ProductListViewModel @Inject constructor(
     is ProductListEvent.OpenInfoDialog -> state = state.copy(
       showInfoDialogs = state.showInfoDialogs.put(event.product,event.value)
     )
+  }
+
+  fun setSort(it: Int) {
+    state = state.copy(
+      sortObject = it
+    )
+  }
+
+  fun showBrands() {
+    state = state.copy(
+      showBrands = !state.showBrands
+    )
+  }
+  fun changeBrand(it: String) {
+    if(state.chooised.contains(it)) {
+      val mutable = mutableListOf<String>()
+      mutable.addAll(state.chooised)
+      mutable.remove(it)
+      state = state.copy(
+        chooised = mutable.toList()
+      )
+    } else {
+      val mutable = mutableListOf<String>()
+      mutable.addAll(state.chooised)
+      mutable.add(it)
+      state = state.copy(
+        chooised = mutable.toList()
+      )
+    }
   }
 }

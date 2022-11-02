@@ -78,7 +78,10 @@ class VinCarViewModel @Inject constructor(
           )
           .collect { data ->
             when (data) {
-              is Data.Success -> _uiEventChannel.send(VinCarUiEvent.GoToStore)
+              is Data.Success -> {
+                _uiEventChannel.send(VinCarUiEvent.Toast(text = "VIN запрос отпрален"))
+                _uiEventChannel.send(VinCarUiEvent.GoToStore)
+              }
               is Data.Loading -> state = state.copy(isLoading = true)
               is Data.Error -> {
                 Log.e(TAG, "Error during adding vin request: ${data.message}")

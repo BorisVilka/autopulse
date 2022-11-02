@@ -21,7 +21,7 @@ class LaximoGetQuickDetailUseCase(
         ssd: String,
         locale: String,
         quickGroupId: String
-    ): Flow<Data<List<LaximoCategoryDto>>> = flow {
+    ): Flow<Data<List<LaximoUnitDto>>> = flow {
         try {
             emit(Data.Loading())
 

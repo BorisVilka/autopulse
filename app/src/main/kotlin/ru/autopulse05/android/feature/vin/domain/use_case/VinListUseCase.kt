@@ -25,7 +25,7 @@ class VinListUseCase(
         val tmp = mutableListOf<VinDto>()
         for(i in list.vinquery.indices) {
             if(list.vinquery[i].clientId==null) continue
-            //Log.d("TAG",list.vinquery[i].clientId+" "+userId)
+                //Log.d("TAG",list.vinquery[i].clientId+" "+userId)
             if(list.vinquery[i].clientId.contentEquals(userId)) tmp.add(list.vinquery[i])
         }
         emit(Data.Success(value = tmp))

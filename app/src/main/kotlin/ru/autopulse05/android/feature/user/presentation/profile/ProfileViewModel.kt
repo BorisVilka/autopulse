@@ -314,6 +314,18 @@ class ProfileViewModel @Inject constructor(
     }
   }
 
+
+  public fun edit(s: String) {
+    state = state.copy(
+      date = s
+    )
+  }
+  public fun editM(s: String) {
+    state = state.copy(
+      dateM = s
+    )
+  }
+
   fun getVehiclesByVin(vin: String) {
     getVehiclesJob?.cancel()
 

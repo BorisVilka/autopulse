@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import ru.autopulse05.android.core.presentation.ui.theme.BrandYellow
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceNormal
 import ru.autopulse05.android.core.presentation.ui.theme.SpaceSmall
 import ru.autopulse05.android.feature.laximo.data.remote.dto.LaximoQuickGroupDto
@@ -129,15 +130,15 @@ fun getUnits(viewModel: LaximoCategoriesViewModel, list: LaximoQuickGroupDto, v:
     ExpandableCard(
       title = PresentationText.Dynamic(list.name),
       modifier = Modifier.padding(SpaceSmall),
-      onClick = { value ->
+      onClick = {
         viewModel.state = viewModel.state.copy(
           vis = viewModel.state.vis.put(list.quickgroupid,!viewModel.state.vis[list.quickgroupid]?.or(false)!!)
         )
       },
       expanded = viewModel.state.vis[list.quickgroupid]?.or(false)!!,
       shape = MaterialTheme.shapes.small,
-      contentExpandedBackgroundColor = MaterialTheme.colors.surface,
-      contentCollapsedBackgroundColor = MaterialTheme.colors.surface
+      contentExpandedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f),
+      contentCollapsedBackgroundColor = Color.BrandYellow.copy(alpha = 0.5f)
     ) {
       Column(
         modifier = Modifier
